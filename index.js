@@ -478,7 +478,7 @@ class CryptoNote {
     /* Generate the key image */
     const keyImage = generateKeyImage(publicEphemeral, privateEphemeral)
 
-    return keyImage
+    return [keyImage, privateEphemeral]
   }
 
   /* This method is designed to create new outputs for use
@@ -912,15 +912,7 @@ function generateRingSignature (transactionPrefixHash, keyImage, inputKeys, priv
   return sigs
 }
 
-function isValidKeys (publicViewKey, privateViewKey, publicSpendKey, privateSpendKey) {
-  /* Let's create our own copies of the public keys based on the supplied
-     private keys and then compare them to what we were given */
-  var expectedPublicViewKey = privateKeyToPublicKey(privateViewKey)
-  var expectedPublicSpendKey = privateKeyToPublicKey(privateSpendKey)
-  return ((expectedPublicSpendKey === publicSpendKey) && (expectedPublicViewKey === publicViewKey))
-}
-
-function createTransaction (wallet, newOutputs, ourOutputs, randomOutputs, mixin, feeAmount, paymentId, unlockTime) {
+function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmount, paymentId, unlockTime) {
   unlockTime = unlockTime || 0
   randomOutputs = randomOutputs || []
 
@@ -946,11 +938,6 @@ function createTransaction (wallet, newOutputs, ourOutputs, randomOutputs, mixin
     if ((randomOutputs[i] || []).length < mixin) {
       throw new Error('There are not enough outputs to mix with in the random outputs sets')
     }
-  }
-
-  /* Verify that our wallet keys are actually valid */
-  if (!isValidKeys(wallet.view.publicKey, wallet.view.privateKey, wallet.spend.publicKey, wallet.spend.privateKey)) {
-    throw new Error('The wallet keys supplied are not valid')
   }
 
   /* Make sure that we're not trying to send more money than
@@ -992,7 +979,7 @@ function createTransaction (wallet, newOutputs, ourOutputs, randomOutputs, mixin
   var transactionInputs = createTransactionInputs(ourOutputs, randomOutputs, mixin)
 
   /* Prepare our transaction outputs using the helper function */
-  var transactionOutputs = prepareTransactionOutputs(wallet, newOutputs)
+  var transactionOutputs = prepareTransactionOutputs(newOutputs)
 
   var transactionExtra = ''
   /* If we have a payment ID we need to add it to tx_extra */
@@ -1092,14 +1079,20 @@ function createTransactionInputs (ourOutputs, randomOutputs, mixin) {
 
       /* Insert the fake outputs into our array of mixed outputs */
       fakeOutputs.forEach((output) => {
+        /* Can't mix with ourself, skip this iteration. Still might be able to
+           succeed if given more outputs than mixin */
         if (output.globalIndex === realOutput.globalIndex) {
-          throw new Error('It is impossible to mix with yourself. Find some more random outputs and try again.')
+          return
         }
         mixedOutputs.push({
           key: output.key,
           index: output.globalIndex
         })
       })
+
+      if (mixedOutputs.length < mixin) {
+        throw new Error('It is impossible to mix with yourself. Find some more random outputs and try again.')
+      }
     }
 
     /* Insert our real output into the stack of mixed outputs */
@@ -1137,12 +1130,7 @@ function createTransactionInputs (ourOutputs, randomOutputs, mixin) {
   return mixedInputs
 }
 
-function prepareTransactionOutputs (wallet, outputs) {
-  /* Verify that our wallet keys are actually valid */
-  if (!isValidKeys(wallet.view.publicKey, wallet.view.privateKey, wallet.spend.publicKey, wallet.spend.privateKey)) {
-    throw new Error('The wallet keys supplied are not valid')
-  }
-
+function prepareTransactionOutputs (outputs) {
   if (!Array.isArray(outputs)) {
     throw new Error('Must supply an array of outputs')
   }
@@ -1160,13 +1148,7 @@ function prepareTransactionOutputs (wallet, outputs) {
       throw new Error('Cannot have an amount <= 0')
     }
 
-    var outDerivation
-    /* If the amount is being sent to us, we need to handle that correctly */
-    if (output.keys.publicViewKey === wallet.view.publicKey) {
-      outDerivation = this.generateKeyDerivation(transactionKeys.publicKey, wallet.view.privateKey)
-    } else {
-      outDerivation = this.generateKeyDerivation(output.keys.publicViewKey, transactionKeys.privateKey)
-    }
+    var outDerivation = this.generateKeyDerivation(output.keys.publicViewKey, transactionKeys.privateKey)
 
     /* Generate the one time output key */
     const outEphemeralPub = derivePublicKey(outDerivation, i, output.keys.publicSpendKey)

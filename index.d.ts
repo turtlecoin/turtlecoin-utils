@@ -1,7 +1,7 @@
 export class CryptoNote {
     constructor(config?: CryptoNoteOptions);
 
-    /** 
+    /**
      * Creates a new, random address seed.
      *
      * @param entropy       Optional entropy to use, otherwise we will use our own.
@@ -50,7 +50,7 @@ export class CryptoNote {
 
     /**
      * Creates an address from the given spend and view keys.
-     * 
+     *
      * @param privateSpendKey   A valid, 64 char hex key.
      * @param privateViewKey    A valid, 64 char hex key.
      * @param addressPrefix     The address prefix in decimal.
@@ -146,15 +146,17 @@ export class CryptoNote {
      * @param publicSpendKey        The public spend key of the wallet this transaction belongs to
      * @param privateSpendKey       The private spend key of the wallet this transaction belongs to
      * @param outputIndex           The index of this output in the transaction (0 based indexing)
+     *
+     * @returns Returns the [keyImage, privateEphemeral]
      */
     public generateKeyImage(
         transactionPublicKey: string,
         privateViewKey: string,
         publicSpendKey: string,
         privateSpendKey: string,
-        outputIndex: number): string;
+        outputIndex: number): [string, string];
 
-    /** 
+    /**
      * Generates a key image for the given transaction data, using a previously
      * created derivation.
      *
@@ -162,25 +164,27 @@ export class CryptoNote {
      * @param privateSpendKey   The private spend key of the wallet this transaction belongs to
      * @param outputIndex       The index of this output in the transaction (0 based indexing)
      * @param derivation        The derivation of the private view key and the transaction public key
+     *
+     *
+     * @returns Returns the [keyImage, privateEphemeral]
      */
     public generateKeyImagePrimitive(
         publicSpendKey: string,
         privateSpendKey: string,
         outputIndex: number,
-        derivation: string): string;
+        derivation: string): [string, string];
 
     /**
      * Creates a valid transaction to be submitted to the network for sending.
      */
     public createTransaction(
-        ourKeys: Wallet,
         transfers: TxDestination[],
         ourOutputs: Output[],
-        randomOuts: RandomOutput[],
+        randomOuts: RandomOutput[][],
         mixin: number,
         feeAmount: number,
         paymentId?: string,
-        unlockTime?: number): Transaction;
+        unlockTime?: number): CreatedTransaction;
 
     /**
      * Converts an amount in atomic units, to a human friendly representation.
@@ -207,99 +211,100 @@ export class CryptoNote {
 }
 
 export interface CryptoNoteOptions {
-    coinUnitPlaces?: number,
-    addressPrefix?: number,
-    keccakIterations?: number,
-    defaultNetworkFee?: number
+    coinUnitPlaces?: number;
+    addressPrefix?: number;
+    keccakIterations?: number;
+    defaultNetworkFee?: number;
 }
 
 export interface Output {
-    key: string,
-    input: Input,
-    keyImage: string
-    index: number,
-    globalIndex: number
+    key: string;
+    input: Input;
+    keyImage: string;
+    index: number;
+    globalIndex: number;
+    amount: number;
 }
 
 export interface Input {
-    transactionKey: Keys,
-    publicEphemeral: string
-    privateEphemeral: string
+    privateEphemeral: string;
+    privateSpendKey: string;
+    publicSpendKey: string;
 }
 
 export interface Address {
-    spend: Keys,
-    view: Keys,
-    address: string,
-    mnemonic: string,
-    seed: string
+    spend: Keys;
+    view: Keys;
+    address: string;
+    mnemonic: string;
+    seed: string;
 }
 
 export interface Keys {
-    privateKey: string,
-    publicKey: string
+    privateKey: string;
+    publicKey: string;
 }
 
 export interface DecodedAddressPrefix {
-    prefix: string,
-    base58: string,
-    decimal: number,
-    hexadecimal: string
+    prefix: string;
+    base58: string;
+    decimal: number;
+    hexadecimal: string;
 }
 
 export interface DecodedAddress {
-    publicViewKey: string,
-    publicSpendKey: string,
-    paymentId: string,
-    encodedPrefix: string,
-    prefix: number,
-    rawAddress: string
+    publicViewKey: string;
+    publicSpendKey: string;
+    paymentId: string;
+    encodedPrefix: string;
+    prefix: number;
+    rawAddress: string;
 }
 
 export interface TxDestination {
-    amount: number,
-    keys: DecodedAddress
+    amount: number;
+    keys: DecodedAddress;
 }
 
 export interface Wallet {
-    view: Keys,
-    spend: Keys
+    view: Keys;
+    spend: Keys;
 }
 
 export interface RandomOutput {
-    key: string,
-    globalIndex: number
+    key: string;
+    globalIndex: number;
 }
 
 export interface CreatedTransaction {
-    transaction: Transaction,
-    rawTransaction: string,
-    hash: string
+    transaction: Transaction;
+    rawTransaction: string;
+    hash: string;
 }
 
 export interface Transaction {
-    unlockTime: number,
-    version: number,
-    extra: string,
-    prvKey: string,
-    vin: Vin[],
-    vout: Vout[],
-    signatures: string[][]
+    unlockTime: number;
+    version: number;
+    extra: string;
+    prvKey: string;
+    vin: Vin[];
+    vout: Vout[];
+    signatures: string[][];
 }
 
 export interface Vin {
-    type: string,
-    amount: number,
-    keyImage: string,
-    keyOffsets: number[]
+    type: string;
+    amount: number;
+    keyImage: string;
+    keyOffsets: number[];
 }
 
 export interface Vout {
-    amount: number,
-    target: Target,
-    type: string
+    amount: number;
+    target: Target;
+    type: string;
 }
 
 export interface Target {
-    data: string
+    data: string;
 }
