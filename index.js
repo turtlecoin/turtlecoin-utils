@@ -547,9 +547,9 @@ class CryptoNote {
   }
 
   generateKeyDerivation (transactionPublicKey, privateViewKey) {
-      return generateKeyDerivation(transactionPublicKey, privateViewKey);
+    return generateKeyDerivation(transactionPublicKey, privateViewKey)
   }
-  
+
   underivePublicKey (derivation, outputIndex, outputKey) {
     if (!isHex64(derivation)) {
       throw new Error('Invalid derivation key format')
