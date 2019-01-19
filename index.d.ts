@@ -228,8 +228,6 @@ export interface Output {
 
 export interface Input {
     privateEphemeral: string;
-    privateSpendKey: string;
-    publicSpendKey: string;
 }
 
 export interface Address {

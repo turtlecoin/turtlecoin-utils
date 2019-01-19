@@ -175,8 +175,8 @@ console.log('')
 console.log('Verifying key images are correctly created...')
 console.log('')
 
-const keyImage = cnUtil.generateKeyImage(txPublicKey, walletPrivateViewKey, walletPublicSpendKey, walletPrivateSpendKey, ourOutputIndex)
-const keyImagePrimitive = cnUtil.generateKeyImagePrimitive(walletPublicSpendKey, walletPrivateSpendKey, ourOutputIndex, derivation)
+const [keyImage] = cnUtil.generateKeyImage(txPublicKey, walletPrivateViewKey, walletPublicSpendKey, walletPrivateSpendKey, ourOutputIndex)
+const [keyImagePrimitive] = cnUtil.generateKeyImagePrimitive(walletPublicSpendKey, walletPrivateSpendKey, ourOutputIndex, derivation)
 
 console.log('Generated key image: ', keyImage)
 console.log('Generated key image (primitive): ', keyImagePrimitive)
