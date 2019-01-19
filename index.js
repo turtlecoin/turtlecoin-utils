@@ -547,18 +547,9 @@ class CryptoNote {
   }
 
   generateKeyDerivation (transactionPublicKey, privateViewKey) {
-    if (!isHex64(transactionPublicKey)) {
-      throw new Error('Invalid public key format')
-    }
-
-    if (!isHex64(privateViewKey)) {
-      throw new Error('Invalid secret key format')
-    }
-
-    var p = geScalarMult(transactionPublicKey, privateViewKey)
-    return geScalarMult(p, d2s(8))
+      return generateKeyDerivation(transactionPublicKey, privateViewKey);
   }
-
+  
   underivePublicKey (derivation, outputIndex, outputKey) {
     if (!isHex64(derivation)) {
       throw new Error('Invalid derivation key format')
@@ -833,6 +824,10 @@ function absoluteToRelativeOffsets (offsets) {
   for (var i = offsets.length - 1; i >= 1; --i) {
     offsets[i] = BigInteger(offsets[i]).subtract(offsets[i - 1]).toString()
   }
+
+  /* All the other offsets are strings, not numbers. It still works, but, muh
+     autism */
+  offsets[0] = offsets[0].toString()
 
   return offsets
 }
@@ -1148,7 +1143,7 @@ function prepareTransactionOutputs (outputs) {
       throw new Error('Cannot have an amount <= 0')
     }
 
-    var outDerivation = this.generateKeyDerivation(output.keys.publicViewKey, transactionKeys.privateKey)
+    var outDerivation = generateKeyDerivation(output.keys.publicViewKey, transactionKeys.privateKey)
 
     /* Generate the one time output key */
     const outEphemeralPub = derivePublicKey(outDerivation, i, output.keys.publicSpendKey)
@@ -1238,6 +1233,19 @@ function serializeTransaction (tx, headerOnly) {
   }
 
   return buf
+}
+
+function generateKeyDerivation (transactionPublicKey, privateViewKey) {
+  if (!isHex64(transactionPublicKey)) {
+    throw new Error('Invalid public key format')
+  }
+
+  if (!isHex64(privateViewKey)) {
+    throw new Error('Invalid secret key format')
+  }
+
+  var p = geScalarMult(transactionPublicKey, privateViewKey)
+  return geScalarMult(p, d2s(8))
 }
 
 module.exports = {
