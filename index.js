@@ -1074,6 +1074,12 @@ function createTransactionInputs (ourOutputs, randomOutputs, mixin) {
 
       /* Insert the fake outputs into our array of mixed outputs */
       fakeOutputs.forEach((output) => {
+        /* User can pass in extra outputs to let us continue if we get our
+           own output as one to mix with. (See below). Continue once we've
+           got enough. */
+        if (mixedOutputs.length === mixin) {
+          return
+        }
         /* Can't mix with ourself, skip this iteration. Still might be able to
            succeed if given more outputs than mixin */
         if (output.globalIndex === realOutput.globalIndex) {
