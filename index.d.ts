@@ -284,7 +284,7 @@ export interface Transaction {
     unlockTime: number;
     version: number;
     extra: string;
-    prvKey: string;
+    transactionKeys: Keys;
     vin: Vin[];
     vout: Vout[];
     signatures: string[][];

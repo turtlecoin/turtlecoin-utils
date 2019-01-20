@@ -988,7 +988,7 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
     unlockTime: unlockTime,
     version: CURRENT_TX_VERSION,
     extra: transactionExtra,
-    prvkey: transactionOutputs.transactionKeys.privateKey,
+    transactionKeys: transactionOutputs.transactionKeys,
     vin: [],
     vout: [],
     signatures: []
