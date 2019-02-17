@@ -10,7 +10,7 @@ export class CryptoNote {
      */
     public createNewSeed(
         entropy?: string,
-        iterations?: number): string;
+        iterations?: number): Promise<string>;
 
     /**
      * Creates a new, random, deterministic address.
@@ -22,7 +22,7 @@ export class CryptoNote {
     public createNewAddress(
         entropy?: string,
         lang?: string,
-        addressPrefix?: string): Address;
+        addressPrefix?: string): Promise<Address>;
 
     /**
      * Creates an address from the given seed.
@@ -34,7 +34,7 @@ export class CryptoNote {
     public createAddressFromSeed(
         seed: string,
         lang?: string,
-        addressPrefix?: string): Address;
+        addressPrefix?: string): Promise<Address>;
 
     /**
      * Creates an address from the given mnemonic seed.
@@ -46,7 +46,7 @@ export class CryptoNote {
     public createAddressFromMnemonic(
         mnemonic: string,
         lang?: string,
-        addressPrefix?: string): Address;
+        addressPrefix?: string): Promise<Address>;
 
     /**
      * Creates an address from the given spend and view keys.
@@ -58,7 +58,7 @@ export class CryptoNote {
     public createAddressFromKeys(
         privateSpendKey: string,
         privateViewKey: string,
-        addressPrefix?: string): Address;
+        addressPrefix?: string): Promise<Address>;
 
     /**
      * Decodes the address prefix from the given address into a number of formats.
@@ -70,7 +70,7 @@ export class CryptoNote {
      */
     public decodeAddress(
         address: string,
-        addressPrefix?: string): DecodedAddress;
+        addressPrefix?: string): Promise<DecodedAddress>;
 
     /**
      * Encodes the raw address data into a conventional address, using base58 encoding.
@@ -85,7 +85,7 @@ export class CryptoNote {
         publicViewKey: string,
         publicSpendKey: string,
         paymentId?: string,
-        addressPrefix?: string): string;
+        addressPrefix?: string): Promise<string>;
 
     /**
      * Creates an integrated address from a standard address and a paymentID.
@@ -93,12 +93,12 @@ export class CryptoNote {
     public createIntegratedAddress(
         address: string,
         paymentId: string,
-        addressPrefix?: string): string;
+        addressPrefix?: string): Promise<string>;
 
     /**
      * Converts a private key to the corresponding public key.
      */
-    public privateKeyToPublicKey(privateKey: string): string;
+    public privateKeyToPublicKey(privateKey: string): Promise<string>;
 
     /**
      * Scans the given outputs, determining which of them belong to us.
@@ -116,7 +116,7 @@ export class CryptoNote {
         outputs: Output[],
         privateViewKey: string,
         publicSpendKey: string,
-        privateSpendKey?: string): Output[];
+        privateSpendKey?: string): Promise<Output[]>;
 
     /**
      * Scans a single transaction output to determine if it belongs to us.
@@ -136,7 +136,7 @@ export class CryptoNote {
         transactionPublicKey: string,
         output: Output,
         privateViewKey: string,
-        privateSpendKey?: string): Output | boolean;
+        privateSpendKey?: string): Promise<Output | boolean>;
 
     /**
      * Generates a key image for the given transaction data.
@@ -154,7 +154,7 @@ export class CryptoNote {
         privateViewKey: string,
         publicSpendKey: string,
         privateSpendKey: string,
-        outputIndex: number): [string, string];
+        outputIndex: number): Promise<[string, string]>;
 
     /**
      * Generates a key image for the given transaction data, using a previously
@@ -172,7 +172,7 @@ export class CryptoNote {
         publicSpendKey: string,
         privateSpendKey: string,
         outputIndex: number,
-        derivation: string): [string, string];
+        derivation: string): Promise<[string, string]>;
 
     /**
      * Creates a valid transaction to be submitted to the network for sending.
@@ -184,7 +184,7 @@ export class CryptoNote {
         mixin: number,
         feeAmount: number,
         paymentId?: string,
-        unlockTime?: number): CreatedTransaction;
+        unlockTime?: number): Promise<CreatedTransaction>;
 
     /**
      * Converts an amount in atomic units, to a human friendly representation.
@@ -197,7 +197,7 @@ export class CryptoNote {
      */
     public generateKeyDerivation(
         transactionPublicKey: string,
-        privateViewKey: string): string;
+        privateViewKey: string): Promise<string>;
 
     /**
      * Creates the corresponding public spend key of an output key, output index,
@@ -207,7 +207,7 @@ export class CryptoNote {
     public underivePublicKey(
         derivation: string,
         outputIndex: number,
-        outputKey: string): string;
+        outputKey: string): Promise<string>;
 }
 
 export interface CryptoNoteOptions {
@@ -236,21 +236,21 @@ export interface CryptoNoteOptions {
      */
     underivePublicKey?: (derivation: string,
                          outputIndex: number,
-                         outputKey: string) => string;
+                         outputKey: string) => (string | Promise<string>);
 
     /**
      * A replacement function for the JS/C++ derivePublicKey.
      */
     derivePublicKey?: (derivation: string,
                        outputIndex: number,
-                       publicKey: string) => string;
+                       publicKey: string) => (string | Promise<string>);
 
     /**
      * A replacement function for the JS/C++ deriveSecretKey.
      */
     deriveSecretKey?: (derivation: string,
                        outputIndex: number,
-                       privateKey: string) => string;
+                       privateKey: string) => (string | Promise<string>);
 
     /**
      * A replacement function for the JS/C++ generateKeyImage.
@@ -259,17 +259,17 @@ export interface CryptoNoteOptions {
                         privateViewKey: string,
                         publicSpendKey: string,
                         privateSpendKey: string,
-                        outputIndex: number) => string;
+                        outputIndex: number) => (string | Promise<string>);
 
     /**
      * A replacement function for the JS/C++ secretKeyToPublicKey.
      */
-    secretKeyToPublicKey?: (privateKey: string) => string;
+    secretKeyToPublicKey?: (privateKey: string) => (string | Promise<string>);
 
     /**
      * A replacement function for the JS/C++ cnFastHash.
      */
-    cnFastHash?: (input: string) => string;
+    cnFastHash?: (input: string) => (string | Promise<string>);
 
     /**
      * A replacement function for the JS/C++ generateRingSignatures.
@@ -278,13 +278,13 @@ export interface CryptoNoteOptions {
                               keyImage: string,
                               inputKeys: string[],
                               privateKey: string,
-                              realIndex: number) => string[];
+                              realIndex: number) => (string[] | Promise<string[]>);
 
     /**
      * A replacement function for the JS/C++ generateKeyDerivation.
      */
     generateKeyDerivation?: (transactionPublicKey: string,
-                             privateViewKey: string) => string;
+                             privateViewKey: string) => (string | Promise<string>);
 }
 
 export interface Output {

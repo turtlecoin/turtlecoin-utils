@@ -132,7 +132,7 @@ class CryptoNote {
     }
   }
 
-  createNewSeed (entropy, iterations) {
+  async createNewSeed (entropy, iterations) {
     iterations = iterations || this.config.keccakIterations
 
     /* If you don't supply us with entropy, we'll go find our own */
@@ -141,20 +141,20 @@ class CryptoNote {
     /* We're going to take that entropy, throw a random value on
        to it, feed it through a poor very simple PBKDF2 implementation
        to create a seed using the supplied entropy */
-    return scReduce32(simpleKdf(entropy + rand32(), iterations))
+    return scReduce32(await simpleKdf(entropy + rand32(), iterations))
   }
 
-  createNewAddress (entropy, lang, addressPrefix) {
+  async createNewAddress (entropy, lang, addressPrefix) {
     addressPrefix = addressPrefix || this.config.addressPrefix
 
     /* Let's create our new seed */
-    const seed = this.createNewSeed(entropy)
+    const seed = await this.createNewSeed(entropy)
 
     /* Using that seed, let's create our new CryptoNote address */
     return this.createAddressFromSeed(seed, lang, addressPrefix)
   }
 
-  createAddressFromSeed (seed, lang, addressPrefix) {
+  async createAddressFromSeed (seed, lang, addressPrefix) {
     addressPrefix = addressPrefix || this.config.addressPrefix
 
     /* When we have a seed, then we can create a new key
@@ -168,9 +168,9 @@ class CryptoNote {
        to turn it into 64 characters */
     var first = seed
     if (first.length !== 64) {
-      first = cnFastHash(seed)
+      first = await cnFastHash(seed)
     }
-    keys.spend = generateKeys(first)
+    keys.spend = await generateKeys(first)
 
     /* If our seed was less than 64 characters, then we
        hash our seed again to get us the necessary data
@@ -178,15 +178,15 @@ class CryptoNote {
        the privateSpendKey we just created */
     var second
     if (seed.length !== 64) {
-      second = cnFastHash(first)
+      second = await cnFastHash(first)
     } else {
-      second = cnFastHash(keys.spend.privateKey)
+      second = await cnFastHash(keys.spend.privateKey)
     }
-    keys.view = generateKeys(second)
+    keys.view = await generateKeys(second)
 
     /* Once we have our keys, then we can encode the public keys
        out of our view and spend pairs to create our public address */
-    keys.address = this.encodeAddress(keys.view.publicKey, keys.spend.publicKey, false, addressPrefix)
+    keys.address = await this.encodeAddress(keys.view.publicKey, keys.spend.publicKey, false, addressPrefix)
 
     /* As we know the seed, we can encode it to a mnemonic string */
     keys.mnemonic = Mnemonic.encode(seed, lang)
@@ -197,7 +197,7 @@ class CryptoNote {
     return keys
   }
 
-  createAddressFromMnemonic (mnemonic, lang, addressPrefix) {
+  async createAddressFromMnemonic (mnemonic, lang, addressPrefix) {
     addressPrefix = addressPrefix || this.config.addressPrefix
 
     /* The mnemonic is just a string representation of the seed
@@ -210,21 +210,21 @@ class CryptoNote {
     return this.createAddressFromSeed(seed, lang, addressPrefix)
   }
 
-  createAddressFromKeys (privateSpendKey, privateViewKey, addressPrefix) {
+  async createAddressFromKeys (privateSpendKey, privateViewKey, addressPrefix) {
     addressPrefix = addressPrefix || this.config.addressPrefix
 
-    let derivedViewKey = scReduce32(cnFastHash(privateSpendKey))
+    let derivedViewKey = scReduce32(await cnFastHash(privateSpendKey))
 
     /* We have our private keys so we can generate everything for use
        later except the mnemonic as we don't have the seed */
     const keys = {
       spend: {
         privateKey: privateSpendKey,
-        publicKey: privateKeyToPublicKey(privateSpendKey)
+        publicKey: await privateKeyToPublicKey(privateSpendKey)
       },
       view: {
         privateKey: privateViewKey,
-        publicKey: privateKeyToPublicKey(privateViewKey)
+        publicKey: await privateKeyToPublicKey(privateViewKey)
       },
       address: '',
       /* If the view key is derived from the spend key, we can generate a seed */
@@ -234,7 +234,7 @@ class CryptoNote {
 
     /* As we now have all of our keys, we can find out what our
        public address is */
-    keys.address = this.encodeAddress(keys.view.publicKey, keys.spend.publicKey, false, addressPrefix)
+    keys.address = await this.encodeAddress(keys.view.publicKey, keys.spend.publicKey, false, addressPrefix)
 
     return keys
   }
@@ -299,7 +299,7 @@ class CryptoNote {
     }
   }
 
-  decodeAddress (address, addressPrefix) {
+  async decodeAddress (address, addressPrefix) {
     addressPrefix = addressPrefix || this.config.addressPrefix
 
     /* First, we decode the base58 string to hex */
@@ -342,10 +342,10 @@ class CryptoNote {
     /* Calculate our address checksum */
     if (paymentId.length === 0) {
       /* If there is no payment ID it's pretty simple */
-      checksum = cnFastHash(prefix + publicSpend + publicView).slice(0, SIZES.CHECKSUM)
+      checksum = (await cnFastHash(prefix + publicSpend + publicView)).slice(0, SIZES.CHECKSUM)
     } else {
       /* If there is a payment ID it's pretty simple as well */
-      checksum = cnFastHash(prefix + paymentId + publicSpend + publicView).slice(0, SIZES.CHECKSUM)
+      checksum = (await cnFastHash(prefix + paymentId + publicSpend + publicView)).slice(0, SIZES.CHECKSUM)
 
       /* As goofy as this sounds, we need to convert the payment
          ID from hex into a string representation so that it returns
@@ -373,7 +373,7 @@ class CryptoNote {
     return Base58.encode(rawAddress)
   }
 
-  encodeAddress (publicViewKey, publicSpendKey, paymentId, addressPrefix) {
+  async encodeAddress (publicViewKey, publicSpendKey, paymentId, addressPrefix) {
     addressPrefix = addressPrefix || this.config.addressPrefix
     paymentId = paymentId || false
 
@@ -411,27 +411,27 @@ class CryptoNote {
     rawAddress = rawAddress.join('')
 
     /* Generate the checksum and toss that on the end */
-    const checksum = cnFastHash(rawAddress).slice(0, 8)
+    const checksum = (await cnFastHash(rawAddress)).slice(0, 8)
     rawAddress += checksum
 
     /* Finally, encode all that to Base58 */
     return Base58.encode(rawAddress)
   }
 
-  createIntegratedAddress (address, paymentId, addressPrefix) {
+  async createIntegratedAddress (address, paymentId, addressPrefix) {
     addressPrefix = addressPrefix || this.config.addressPrefix
 
     /* Decode our address */
-    var addr = this.decodeAddress(address)
+    var addr = await this.decodeAddress(address)
     /* Encode the address but this time include the payment ID */
     return this.encodeAddress(addr.publicViewKey, addr.publicSpendKey, paymentId, addressPrefix)
   }
 
-  privateKeyToPublicKey (privateKey) {
+  async privateKeyToPublicKey (privateKey) {
     return privateKeyToPublicKey(privateKey)
   }
 
-  scanTransactionOutputs (transactionPublicKey, outputs, privateViewKey, publicSpendKey, privateSpendKey) {
+  async scanTransactionOutputs (transactionPublicKey, outputs, privateViewKey, publicSpendKey, privateSpendKey) {
     /* Given the transaction public key and the array of outputs, let's see if
        any of the outputs belong to us */
 
@@ -441,7 +441,7 @@ class CryptoNote {
       var output = outputs[i]
 
       /* Check to see if this output belongs to us */
-      var ourOutput = this.isOurTransactionOutput(transactionPublicKey, output, privateViewKey, publicSpendKey, privateSpendKey)
+      var ourOutput = await this.isOurTransactionOutput(transactionPublicKey, output, privateViewKey, publicSpendKey, privateSpendKey)
       if (ourOutput) {
         ourOutputs.push(ourOutput)
       }
@@ -450,7 +450,7 @@ class CryptoNote {
     return ourOutputs
   }
 
-  isOurTransactionOutput (transactionPublicKey, output, privateViewKey, publicSpendKey, privateSpendKey) {
+  async isOurTransactionOutput (transactionPublicKey, output, privateViewKey, publicSpendKey, privateSpendKey) {
     privateSpendKey = privateSpendKey || false
     output = output || {}
 
@@ -475,10 +475,10 @@ class CryptoNote {
     }
 
     /* Generate the key deriviation from the random transaction public key and our private view key */
-    const derivedKey = this.generateKeyDerivation(transactionPublicKey, privateViewKey)
+    const derivedKey = await this.generateKeyDerivation(transactionPublicKey, privateViewKey)
 
     /* Derive the transfer public key from the derived key, the output index, and our public spend key */
-    const publicEphemeral = derivePublicKey(derivedKey, output.index, publicSpendKey)
+    const publicEphemeral = await derivePublicKey(derivedKey, output.index, publicSpendKey)
 
     /* If the derived transfer public key matches the output key then this output belongs to us */
     if (output.key === publicEphemeral) {
@@ -491,10 +491,10 @@ class CryptoNote {
 
       if (privateSpendKey) {
         /* Derive the key image private key from the derived key, the output index, and our spend secret key */
-        const privateEphemeral = deriveSecretKey(derivedKey, output.index, privateSpendKey)
+        const privateEphemeral = await deriveSecretKey(derivedKey, output.index, privateSpendKey)
 
         /* Generate the key image */
-        const keyImage = generateKeyImage(publicEphemeral, privateEphemeral)
+        const keyImage = await generateKeyImage(publicEphemeral, privateEphemeral)
 
         output.input.privateEphemeral = privateEphemeral
         output.keyImage = keyImage
@@ -506,7 +506,7 @@ class CryptoNote {
     return false
   }
 
-  generateKeyImage (transactionPublicKey, privateViewKey, publicSpendKey, privateSpendKey, outputIndex) {
+  async generateKeyImage (transactionPublicKey, privateViewKey, publicSpendKey, privateSpendKey, outputIndex) {
     if (!isHex64(transactionPublicKey)) {
       throw new Error('Invalid transaction public key format')
     }
@@ -515,14 +515,14 @@ class CryptoNote {
       throw new Error('Invalid private view key format')
     }
     /* Generate the key deriviation from the random transaction public key and our private view key */
-    let derivation = this.generateKeyDerivation(transactionPublicKey, privateViewKey)
+    let derivation = await this.generateKeyDerivation(transactionPublicKey, privateViewKey)
 
     return this.generateKeyImagePrimitive(publicSpendKey, privateSpendKey, outputIndex, derivation)
   }
 
   /* If the user already has a derivation, they can pass that in instead of
      the privateViewKey and transactionPublicKey */
-  generateKeyImagePrimitive (publicSpendKey, privateSpendKey, outputIndex, derivation) {
+  async generateKeyImagePrimitive (publicSpendKey, privateSpendKey, outputIndex, derivation) {
     if (!isHex64(publicSpendKey)) {
       throw new Error('Invalid public spend key format')
     }
@@ -532,20 +532,20 @@ class CryptoNote {
     }
 
     /* Derive the transfer public key from the derived key, the output index, and our public spend key */
-    const publicEphemeral = derivePublicKey(derivation, outputIndex, publicSpendKey)
+    const publicEphemeral = await derivePublicKey(derivation, outputIndex, publicSpendKey)
 
     /* Derive the key image private key from the derived key, the output index, and our spend secret key */
-    const privateEphemeral = deriveSecretKey(derivation, outputIndex, privateSpendKey)
+    const privateEphemeral = await deriveSecretKey(derivation, outputIndex, privateSpendKey)
 
     /* Generate the key image */
-    const keyImage = generateKeyImage(publicEphemeral, privateEphemeral)
+    const keyImage = await generateKeyImage(publicEphemeral, privateEphemeral)
 
     return [keyImage, privateEphemeral]
   }
 
   /* This method is designed to create new outputs for use
      during transaction creation */
-  createTransactionOutputs (address, amount) {
+  async createTransactionOutputs (address, amount) {
     amount = amount || false
 
     /* If we didn't specify an amount we can't send anything */
@@ -556,7 +556,7 @@ class CryptoNote {
     const result = []
 
     /* Decode the address into it's important bits */
-    var addressDecoded = this.decodeAddress(address)
+    var addressDecoded = await this.decodeAddress(address)
 
     /* Now we need to decompose the amount into "pretty" amounts
        that we can actually mix later. We're doing this by
@@ -580,14 +580,14 @@ class CryptoNote {
     return result
   }
 
-  createTransactionStructure (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
+  async createTransactionStructure (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
     return createTransaction(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime)
   }
 
-  createTransaction (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
-    var tx = this.createTransactionStructure(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime)
+  async createTransaction (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
+    var tx = await this.createTransactionStructure(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime)
     var serializedTransaction = serializeTransaction(tx)
-    var txnHash = cnFastHash(serializedTransaction)
+    var txnHash = await cnFastHash(serializedTransaction)
 
     return {
       transaction: tx,
@@ -608,17 +608,17 @@ class CryptoNote {
     return Numeral(amount / Math.pow(10, this.config.coinUnitPlaces)).format('0,0.' + places)
   }
 
-  generateKeyDerivation (transactionPublicKey, privateViewKey) {
+  async generateKeyDerivation (transactionPublicKey, privateViewKey) {
     return generateKeyDerivation(transactionPublicKey, privateViewKey)
   }
 
-  underivePublicKey (derivation, outputIndex, outputKey) {
+  async underivePublicKey (derivation, outputIndex, outputKey) {
     if (!isHex64(derivation)) {
       throw new Error('Invalid derivation key format')
     }
 
     if (userCryptoFunctions.underivePublicKey) {
-      userCryptoFunctions.underivePublicKey(derivation, outputIndex, outputKey)
+      return userCryptoFunctions.underivePublicKey(derivation, outputIndex, outputKey)
     } else if (TurtleCoinCrypto) {
       return TurtleCoinCrypto.underivePublicKey(derivation, outputIndex, outputKey)
     } else {
@@ -764,11 +764,11 @@ function geScalarMult (publicKey, privateKey) {
   return bin2hex(NACL.ll.geScalarmult(hex2bin(publicKey), hex2bin(privateKey)))
 }
 
-function getScalarMultBase (privateKey) {
+async function getScalarMultBase (privateKey) {
   return privateKeyToPublicKey(privateKey)
 }
 
-function derivePublicKey (derivation, outputIndex, publicKey) {
+async function derivePublicKey (derivation, outputIndex, publicKey) {
   if (derivation.length !== (SIZES.ECPOINT * 2)) {
     throw new Error('Invalid derivation length')
   }
@@ -782,12 +782,12 @@ function derivePublicKey (derivation, outputIndex, publicKey) {
   } else if (TurtleCoinCrypto) {
     return TurtleCoinCrypto.derivePublicKey(derivation, outputIndex, publicKey)
   } else {
-    var s = derivationToScalar(derivation, outputIndex)
-    return bin2hex(NACL.ll.geAdd(hex2bin(publicKey), hex2bin(getScalarMultBase(s))))
+    var s = await derivationToScalar(derivation, outputIndex)
+    return bin2hex(NACL.ll.geAdd(hex2bin(publicKey), hex2bin(await getScalarMultBase(s))))
   }
 }
 
-function deriveSecretKey (derivation, outputIndex, privateKey) {
+async function deriveSecretKey (derivation, outputIndex, privateKey) {
   if (derivation.length !== (SIZES.ECPOINT * 2)) {
     throw new Error('Invalid derivation length')
   }
@@ -802,7 +802,7 @@ function deriveSecretKey (derivation, outputIndex, privateKey) {
     return TurtleCoinCrypto.deriveSecretKey(derivation, outputIndex, privateKey)
   } else {
     var m = CNCrypto._malloc(SIZES.ECSCALAR)
-    var b = hex2bin(derivationToScalar(derivation, outputIndex))
+    var b = hex2bin(await derivationToScalar(derivation, outputIndex))
     CNCrypto.HEAPU8.set(b, m)
 
     var baseM = CNCrypto._malloc(SIZES.ECSCALAR)
@@ -820,7 +820,7 @@ function deriveSecretKey (derivation, outputIndex, privateKey) {
   }
 }
 
-function generateKeyImage (publicKey, privateKey) {
+async function generateKeyImage (publicKey, privateKey) {
   if (!isHex64(publicKey)) {
     throw new Error('Invalid public key format')
   }
@@ -840,12 +840,12 @@ function generateKeyImage (publicKey, privateKey) {
   }
 }
 
-function hashToScalar (buf) {
-  const hash = cnFastHash(buf)
+async function hashToScalar (buf) {
+  const hash = await cnFastHash(buf)
   return scReduce32(hash)
 }
 
-function derivationToScalar (derivation, outputIndex) {
+async function derivationToScalar (derivation, outputIndex) {
   var buf = ''
 
   if (derivation.length !== (SIZES.ECPOINT * 2)) {
@@ -863,7 +863,7 @@ function derivationToScalar (derivation, outputIndex) {
   return hashToScalar(buf)
 }
 
-function privateKeyToPublicKey (privateKey) {
+async function privateKeyToPublicKey (privateKey) {
   if (privateKey.length !== SIZES.KEY) {
     throw new Error('Invalid secret key length')
   }
@@ -877,7 +877,7 @@ function privateKeyToPublicKey (privateKey) {
   }
 }
 
-function cnFastHash (input) {
+async function cnFastHash (input) {
   if (input.length % 2 !== 0 || !isHex(input)) {
     throw new Error('Invalid input: ' + input)
   }
@@ -891,23 +891,23 @@ function cnFastHash (input) {
   }
 }
 
-function simpleKdf (str, iterations) {
+async function simpleKdf (str, iterations) {
   /* This is a very simple implementation of a
      psuedo PBKDF2 function */
   var hex = bin2hex(str2bin(str))
   for (var n = 0; n < iterations; ++n) {
-    hex = cnFastHash(hex)
+    hex = await cnFastHash(hex)
   }
   return hex
 }
 
-function generateKeys (seed) {
+async function generateKeys (seed) {
   if (seed.length !== 64) {
     throw new Error('Invalid seed length')
   }
 
   var privateKey = scReduce32(seed)
-  var publicKey = privateKeyToPublicKey(privateKey)
+  var publicKey = await privateKeyToPublicKey(privateKey)
 
   return {
     privateKey: privateKey,
@@ -915,9 +915,9 @@ function generateKeys (seed) {
   }
 }
 
-function randomKeypair () {
+async function randomKeypair () {
   /* Generate a random key pair */
-  return generateKeys(simpleKdf(rand32(), 1))
+  return generateKeys(await simpleKdf(rand32(), 1))
 }
 
 /* This method calculates our relative offset positions for
@@ -978,7 +978,7 @@ function addNonceToExtra (extra, nonce) {
   return extra
 }
 
-function generateRingSignature (transactionPrefixHash, keyImage, inputKeys, privateKey, realIndex) {
+async function generateRingSignature (transactionPrefixHash, keyImage, inputKeys, privateKey, realIndex) {
   var sigs = []
 
   if (!isHex64(keyImage)) {
@@ -1021,7 +1021,7 @@ function generateRingSignature (transactionPrefixHash, keyImage, inputKeys, priv
   }
 }
 
-function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmount, paymentId, unlockTime) {
+async function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmount, paymentId, unlockTime) {
   unlockTime = unlockTime || 0
   randomOutputs = randomOutputs || []
 
@@ -1088,7 +1088,7 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
   var transactionInputs = createTransactionInputs(ourOutputs, randomOutputs, mixin)
 
   /* Prepare our transaction outputs using the helper function */
-  var transactionOutputs = prepareTransactionOutputs(newOutputs)
+  var transactionOutputs = await prepareTransactionOutputs(newOutputs)
 
   var transactionExtra = ''
   /* If we have a payment ID we need to add it to tx_extra */
@@ -1135,7 +1135,7 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
 
   tx.extra = addTransactionPublicKeyToExtra(tx.extra, transactionOutputs.transactionKeys.publicKey)
 
-  const txPrefixHash = getTransactionPrefixHash(tx)
+  const txPrefixHash = await getTransactionPrefixHash(tx)
 
   for (i = 0; i < transactionInputs.length; i++) {
     var txInput = transactionInputs[i]
@@ -1145,7 +1145,7 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
       srcKeys.push(out.key)
     })
 
-    const sigs = generateRingSignature(txPrefixHash, txInput.keyImage, srcKeys, txInput.input.privateEphemeral, txInput.realOutputIndex)
+    const sigs = await generateRingSignature(txPrefixHash, txInput.keyImage, srcKeys, txInput.input.privateEphemeral, txInput.realOutputIndex)
     tx.signatures.push(sigs)
   }
 
@@ -1245,7 +1245,7 @@ function createTransactionInputs (ourOutputs, randomOutputs, mixin) {
   return mixedInputs
 }
 
-function prepareTransactionOutputs (outputs) {
+async function prepareTransactionOutputs (outputs) {
   if (!Array.isArray(outputs)) {
     throw new Error('Must supply an array of outputs')
   }
@@ -1263,10 +1263,10 @@ function prepareTransactionOutputs (outputs) {
       throw new Error('Cannot have an amount <= 0')
     }
 
-    var outDerivation = generateKeyDerivation(output.keys.publicViewKey, transactionKeys.privateKey)
+    var outDerivation = await generateKeyDerivation(output.keys.publicViewKey, transactionKeys.privateKey)
 
     /* Generate the one time output key */
-    const outEphemeralPub = derivePublicKey(outDerivation, i, output.keys.publicSpendKey)
+    const outEphemeralPub = await derivePublicKey(outDerivation, i, output.keys.publicSpendKey)
 
     /* Push it on to our stack */
     preparedOutputs.push({
@@ -1281,7 +1281,7 @@ function prepareTransactionOutputs (outputs) {
   return { transactionKeys, outputs: preparedOutputs }
 }
 
-function getTransactionPrefixHash (tx) {
+async function getTransactionPrefixHash (tx) {
   /* Serialize the transaction as a string (blob) but
      do not include the signatures */
   var prefix = serializeTransaction(tx, true)
@@ -1355,7 +1355,7 @@ function serializeTransaction (tx, headerOnly) {
   return buf
 }
 
-function generateKeyDerivation (transactionPublicKey, privateViewKey) {
+async function generateKeyDerivation (transactionPublicKey, privateViewKey) {
   if (!isHex64(transactionPublicKey)) {
     throw new Error('Invalid public key format')
   }
