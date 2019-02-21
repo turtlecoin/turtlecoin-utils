@@ -597,15 +597,18 @@ class CryptoNote {
   }
 
   createTransactionAsync (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
-    var tx = this.createTransactionStructure(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, true)
-    var serializedTransaction = serializeTransaction(tx)
-    var txnHash = cnFastHash(serializedTransaction)
+    return this.createTransactionStructure(
+      ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, true
+    ).then((tx) => {
+      var serializedTransaction = serializeTransaction(tx)
+      var txnHash = cnFastHash(serializedTransaction)
 
-    return {
-      transaction: tx,
-      rawTransaction: serializedTransaction,
-      hash: txnHash
-    }
+      return {
+        transaction: tx,
+        rawTransaction: serializedTransaction,
+        hash: txnHash
+      }
+    })
   }
 
   serializeTransaction (transaction) {
