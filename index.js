@@ -580,12 +580,12 @@ class CryptoNote {
     return result
   }
 
-  createTransactionStructure (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, _async) {
-    return createTransaction(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, _async)
+  createTransactionStructure (newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, _async) {
+    return createTransaction(newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, _async)
   }
 
-  createTransaction (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
-    var tx = this.createTransactionStructure(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, false)
+  createTransaction (newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
+    var tx = this.createTransactionStructure(newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, false)
     var serializedTransaction = serializeTransaction(tx)
     var txnHash = cnFastHash(serializedTransaction)
 
@@ -596,9 +596,9 @@ class CryptoNote {
     }
   }
 
-  createTransactionAsync (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
+  createTransactionAsync (newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
     return this.createTransactionStructure(
-      ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, true
+      newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, true
     ).then((tx) => {
       var serializedTransaction = serializeTransaction(tx)
       var txnHash = cnFastHash(serializedTransaction)
@@ -1050,6 +1050,9 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
     throw new Error('ourOutputs must be an array')
   }
 
+  console.log(randomOutputs.length);
+  console.log(ourOutputs.length);
+
   /* Make sure that if we are to use mixins that we've been given the
      correct number of sets of random outputs */
   if (randomOutputs.length !== ourOutputs.length && mixin !== 0) {
@@ -1146,9 +1149,13 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
 
   tx.extra = addTransactionPublicKeyToExtra(tx.extra, transactionOutputs.transactionKeys.publicKey)
 
+  console.log('1');
+
   if (_async) {
+    console.log('2');
     return transactionOutputs.outputs.then((outputs) => {
-      outputs.forEeach((output) => {
+      console.log('3');
+      outputs.forEach((output) => {
         tx.vout.push(output)
       })
 
@@ -1167,14 +1174,18 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
         var sigPromise = generateRingSignature(
           txPrefixHash, txInput.keyImage, srcKeys, txInput.input.privateEphemeral, txInput.realOutputIndex
         ).then((sigs) => {
+          console.log('4');
           tx.signatures.push(sigs)
         })
+
+        console.log('5');
 
         sigPromises.push(sigPromise)
       }
 
       /* Wait for all the sigs to get created and added, then return the tx */
       return Promise.all(sigPromises).then(() => {
+        console.log('6');
         return tx
       })
     })
