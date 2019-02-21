@@ -596,7 +596,7 @@ class CryptoNote {
     }
   }
 
-  createTransactionAsync (newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, ) {
+  createTransactionAsync (newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
     return this.createTransactionStructure(
       newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, true
     ).then((tx) => {
@@ -1308,7 +1308,7 @@ function prepareTransactionOutputs (outputs, _async) {
   outputs.sort((a, b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0))
 
   const preparedOutputs = []
-  let promises = [];
+  let promises = []
 
   if (_async) {
     promises = outputs.map((output, i) => {
@@ -1321,7 +1321,7 @@ function prepareTransactionOutputs (outputs, _async) {
       )).then((outDerivation) => {
         return Promise.resolve(derivePublicKey(outDerivation, i, output.keys.publicSpendKey))
       }).then((outEphemeralPub) => {
-        return({
+        return ({
           amount: output.amount,
           target: {
             data: outEphemeralPub
@@ -1329,7 +1329,7 @@ function prepareTransactionOutputs (outputs, _async) {
           type: 'txout_to_key'
         })
       })
-    });
+    })
   } else {
     for (var i = 0; i < outputs.length; i++) {
       var output = outputs[i]
@@ -1357,7 +1357,7 @@ function prepareTransactionOutputs (outputs, _async) {
     return {
       transactionKeys,
       outputs: Promise.all(promises).then((outputs) => {
-        return outputs;
+        return outputs
       })
     }
   }
