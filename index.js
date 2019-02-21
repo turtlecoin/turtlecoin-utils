@@ -1308,22 +1308,20 @@ function prepareTransactionOutputs (outputs, _async) {
   outputs.sort((a, b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0))
 
   const preparedOutputs = []
-  const promises = []
+  let promises = [];
 
-  for (var i = 0; i < outputs.length; i++) {
-    var output = outputs[i]
-    if (output.amount <= 0) {
-      throw new Error('Cannot have an amount <= 0')
-    }
+  if (_async) {
+    promises = outputs.map((output, i) => {
+      if (output.amount <= 0) {
+        throw new Error('Cannot have an amount <= 0')
+      }
 
-    if (_async) {
-      var promise = Promise.resolve(generateKeyDerivation(
+      return Promise.resolve(generateKeyDerivation(
         output.keys.publicViewKey, transactionKeys.privateKey
       )).then((outDerivation) => {
         return Promise.resolve(derivePublicKey(outDerivation, i, output.keys.publicSpendKey))
       }).then((outEphemeralPub) => {
-        /* Push it on to our stack */
-        preparedOutputs.push({
+        return({
           amount: output.amount,
           target: {
             data: outEphemeralPub
@@ -1331,9 +1329,14 @@ function prepareTransactionOutputs (outputs, _async) {
           type: 'txout_to_key'
         })
       })
+    });
+  } else {
+    for (var i = 0; i < outputs.length; i++) {
+      var output = outputs[i]
+      if (output.amount <= 0) {
+        throw new Error('Cannot have an amount <= 0')
+      }
 
-      promises.push(promise)
-    } else {
       var outDerivation = generateKeyDerivation(output.keys.publicViewKey, transactionKeys.privateKey)
 
       /* Generate the one time output key */
@@ -1353,8 +1356,8 @@ function prepareTransactionOutputs (outputs, _async) {
   if (_async) {
     return {
       transactionKeys,
-      outputs: Promise.all(promises).then(() => {
-        return preparedOutputs
+      outputs: Promise.all(promises).then((outputs) => {
+        return outputs;
       })
     }
   }
