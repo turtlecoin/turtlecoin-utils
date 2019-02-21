@@ -187,6 +187,19 @@ export class CryptoNote {
         unlockTime?: number): CreatedTransaction;
 
     /**
+     * Creates a valid transaction to be submitted to the network for sending.
+     * Supports passed in user functions that are asynchronous.
+     */
+    public createTransactionAsync(
+        transfers: TxDestination[],
+        ourOutputs: Output[],
+        randomOuts: RandomOutput[][],
+        mixin: number,
+        feeAmount: number,
+        paymentId?: string,
+        unlockTime?: number): Promise<CreatedTransaction>;
+
+    /**
      * Converts an amount in atomic units, to a human friendly representation.
      */
     public formatMoney(amount: number): string;
