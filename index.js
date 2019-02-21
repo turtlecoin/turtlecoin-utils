@@ -596,7 +596,7 @@ class CryptoNote {
     }
   }
 
-  createTransactionAsync (newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
+  createTransactionAsync (newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, ) {
     return this.createTransactionStructure(
       newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, true
     ).then((tx) => {
@@ -1050,9 +1050,6 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
     throw new Error('ourOutputs must be an array')
   }
 
-  console.log(randomOutputs.length);
-  console.log(ourOutputs.length);
-
   /* Make sure that if we are to use mixins that we've been given the
      correct number of sets of random outputs */
   if (randomOutputs.length !== ourOutputs.length && mixin !== 0) {
@@ -1149,12 +1146,10 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
 
   tx.extra = addTransactionPublicKeyToExtra(tx.extra, transactionOutputs.transactionKeys.publicKey)
 
-  console.log('1');
-
   if (_async) {
-    console.log('2');
-    return transactionOutputs.outputs.then((outputs) => {
-      console.log('3');
+    /* Use Promise.resolve so even if the result isn't a promise, it still
+       works */
+    return Promise.resolve(transactionOutputs.outputs).then((outputs) => {
       outputs.forEach((output) => {
         tx.vout.push(output)
       })
@@ -1171,21 +1166,17 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
           srcKeys.push(out.key)
         })
 
-        var sigPromise = generateRingSignature(
+        var sigPromise = Promise.resolve(generateRingSignature(
           txPrefixHash, txInput.keyImage, srcKeys, txInput.input.privateEphemeral, txInput.realOutputIndex
-        ).then((sigs) => {
-          console.log('4');
+        )).then((sigs) => {
           tx.signatures.push(sigs)
         })
-
-        console.log('5');
 
         sigPromises.push(sigPromise)
       }
 
       /* Wait for all the sigs to get created and added, then return the tx */
       return Promise.all(sigPromises).then(() => {
-        console.log('6');
         return tx
       })
     })
@@ -1326,10 +1317,10 @@ function prepareTransactionOutputs (outputs, _async) {
     }
 
     if (_async) {
-      var promise = generateKeyDerivation(
+      var promise = Promise.resolve(generateKeyDerivation(
         output.keys.publicViewKey, transactionKeys.privateKey
-      ).then((outDerivation) => {
-        return derivePublicKey(outDerivation, i, output.keys.publicSpendKey)
+      )).then((outDerivation) => {
+        return Promise.resolve(derivePublicKey(outDerivation, i, output.keys.publicSpendKey))
       }).then((outEphemeralPub) => {
         /* Push it on to our stack */
         preparedOutputs.push({
