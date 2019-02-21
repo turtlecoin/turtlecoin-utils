@@ -580,12 +580,24 @@ class CryptoNote {
     return result
   }
 
-  createTransactionStructure (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
-    return createTransaction(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime)
+  createTransactionStructure (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, _async) {
+    return createTransaction(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, _async)
   }
 
   createTransaction (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
-    var tx = this.createTransactionStructure(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime)
+    var tx = this.createTransactionStructure(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, false)
+    var serializedTransaction = serializeTransaction(tx)
+    var txnHash = cnFastHash(serializedTransaction)
+
+    return {
+      transaction: tx,
+      rawTransaction: serializedTransaction,
+      hash: txnHash
+    }
+  }
+
+  createTransactionAsync (ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime) {
+    var tx = this.createTransactionStructure(ourKeys, newOutputs, ourOutputs, randomOuts, mixin, feeAmount, paymentId, unlockTime, true)
     var serializedTransaction = serializeTransaction(tx)
     var txnHash = cnFastHash(serializedTransaction)
 
@@ -1021,7 +1033,7 @@ function generateRingSignature (transactionPrefixHash, keyImage, inputKeys, priv
   }
 }
 
-function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmount, paymentId, unlockTime) {
+function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmount, paymentId, unlockTime, _async) {
   unlockTime = unlockTime || 0
   randomOutputs = randomOutputs || []
 
@@ -1088,7 +1100,7 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
   var transactionInputs = createTransactionInputs(ourOutputs, randomOutputs, mixin)
 
   /* Prepare our transaction outputs using the helper function */
-  var transactionOutputs = prepareTransactionOutputs(newOutputs)
+  var transactionOutputs = prepareTransactionOutputs(newOutputs, _async)
 
   var transactionExtra = ''
   /* If we have a payment ID we need to add it to tx_extra */
@@ -1129,27 +1141,61 @@ function createTransaction (newOutputs, ourOutputs, randomOutputs, mixin, feeAmo
     tx.vin.push(inputToKey)
   })
 
-  transactionOutputs.outputs.forEach((output) => {
-    tx.vout.push(output)
-  })
-
   tx.extra = addTransactionPublicKeyToExtra(tx.extra, transactionOutputs.transactionKeys.publicKey)
 
-  const txPrefixHash = getTransactionPrefixHash(tx)
+  if (_async) {
+    return transactionOutputs.outputs.then((outputs) => {
+      outputs.forEeach((output) => {
+        tx.vout.push(output)
+      })
 
-  for (i = 0; i < transactionInputs.length; i++) {
-    var txInput = transactionInputs[i]
+      const txPrefixHash = getTransactionPrefixHash(tx)
 
-    var srcKeys = []
-    txInput.outputs.forEach((out) => {
-      srcKeys.push(out.key)
+      const sigPromises = []
+
+      for (i = 0; i < transactionInputs.length; i++) {
+        var txInput = transactionInputs[i]
+
+        var srcKeys = []
+        txInput.outputs.forEach((out) => {
+          srcKeys.push(out.key)
+        })
+
+        var sigPromise = generateRingSignature(
+          txPrefixHash, txInput.keyImage, srcKeys, txInput.input.privateEphemeral, txInput.realOutputIndex
+        ).then((sigs) => {
+          tx.signatures.push(sigs)
+        })
+
+        sigPromises.push(sigPromise)
+      }
+
+      /* Wait for all the sigs to get created and added, then return the tx */
+      return Promise.all(sigPromises).then(() => {
+        return tx
+      })
+    })
+  } else {
+    transactionOutputs.outputs.forEach((output) => {
+      tx.vout.push(output)
     })
 
-    const sigs = generateRingSignature(txPrefixHash, txInput.keyImage, srcKeys, txInput.input.privateEphemeral, txInput.realOutputIndex)
-    tx.signatures.push(sigs)
-  }
+    const txPrefixHash = getTransactionPrefixHash(tx)
 
-  return tx
+    for (i = 0; i < transactionInputs.length; i++) {
+      var txInput = transactionInputs[i]
+
+      var srcKeys = []
+      txInput.outputs.forEach((out) => {
+        srcKeys.push(out.key)
+      })
+
+      const sigs = generateRingSignature(txPrefixHash, txInput.keyImage, srcKeys, txInput.input.privateEphemeral, txInput.realOutputIndex)
+      tx.signatures.push(sigs)
+    }
+
+    return tx
+  }
 }
 
 /* This method is designed to create mixed inputs for use
@@ -1245,7 +1291,7 @@ function createTransactionInputs (ourOutputs, randomOutputs, mixin) {
   return mixedInputs
 }
 
-function prepareTransactionOutputs (outputs) {
+function prepareTransactionOutputs (outputs, _async) {
   if (!Array.isArray(outputs)) {
     throw new Error('Must supply an array of outputs')
   }
@@ -1257,25 +1303,55 @@ function prepareTransactionOutputs (outputs) {
   outputs.sort((a, b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0))
 
   const preparedOutputs = []
+  const promises = []
+
   for (var i = 0; i < outputs.length; i++) {
     var output = outputs[i]
     if (output.amount <= 0) {
       throw new Error('Cannot have an amount <= 0')
     }
 
-    var outDerivation = generateKeyDerivation(output.keys.publicViewKey, transactionKeys.privateKey)
+    if (_async) {
+      var promise = generateKeyDerivation(
+        output.keys.publicViewKey, transactionKeys.privateKey
+      ).then((outDerivation) => {
+        return derivePublicKey(outDerivation, i, output.keys.publicSpendKey)
+      }).then((outEphemeralPub) => {
+        /* Push it on to our stack */
+        preparedOutputs.push({
+          amount: output.amount,
+          target: {
+            data: outEphemeralPub
+          },
+          type: 'txout_to_key'
+        })
+      })
 
-    /* Generate the one time output key */
-    const outEphemeralPub = derivePublicKey(outDerivation, i, output.keys.publicSpendKey)
+      promises.push(promise)
+    } else {
+      var outDerivation = generateKeyDerivation(output.keys.publicViewKey, transactionKeys.privateKey)
 
-    /* Push it on to our stack */
-    preparedOutputs.push({
-      amount: output.amount,
-      target: {
-        data: outEphemeralPub
-      },
-      type: 'txout_to_key'
-    })
+      /* Generate the one time output key */
+      const outEphemeralPub = derivePublicKey(outDerivation, i, output.keys.publicSpendKey)
+
+      /* Push it on to our stack */
+      preparedOutputs.push({
+        amount: output.amount,
+        target: {
+          data: outEphemeralPub
+        },
+        type: 'txout_to_key'
+      })
+    }
+  }
+
+  if (_async) {
+    return {
+      transactionKeys,
+      outputs: Promise.all(promises).then(() => {
+        return preparedOutputs
+      })
+    }
   }
 
   return { transactionKeys, outputs: preparedOutputs }
