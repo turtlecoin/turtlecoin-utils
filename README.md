@@ -129,6 +129,11 @@ The same as generateKeyImage, but allows you to reuse a derivation you have prev
 
 *Documentation In Progress*
 
+#### createTransactionAsync(transfers, ourOutputs, randomOuts, mixin, feeAmount, [paymentId], [unlockTime])
+
+Functions as `createTransaction`, but runs asynchronously, and additionaly, supports user provided async functions.
+The regular code only supports synchronous provided funcs, so ensure any async user provided functions are not being used in other calls you make.
+
 #### serializeTransaction(transaction)
 
 *Documentation In Progress*
