@@ -8,7 +8,8 @@
     "node": ">=6"
   },
   "scripts": {
-    "test": "npm install && standard && node tests/tests.js && node tests/blockTests.js && node tests/p2pTests.js"
+    "test": "npm install && standard && node tests/tests.js && node tests/blockTests.js && node tests/p2pTests.js",
+    "build-docs": "jsdoc -d docs -r -R README.md lib/cryptonote.js lib/block.js lib/transaction.js lib/blocktemplate.js lib/levinpacket.js"
   },
   "keywords": [
     "TurtleCoin",
@@ -38,7 +39,8 @@
       "lib/mnemonic.js",
       "lib/turtlecoin-crypto/turtlecoin-crypto.js",
       "lib/turtlecoin-crypto/turtlecoin-crypto-wasm.js",
-      "dist/*"
+      "dist/*",
+      "docs/*"
     ]
   },
   "devDependencies": {
