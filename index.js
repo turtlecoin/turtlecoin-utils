@@ -10,15 +10,16 @@
 
 const Block = require('./lib/block')
 const BlockTemplate = require('./lib/blocktemplate')
-const Crypto = require('./lib/turtlecoin-crypto')()
+const Crypto = require('./lib/turtlecoin-crypto')
 const CryptoNote = require('./lib/cryptonote')
 const LevinPacket = require('./lib/levinpacket')
 const Transaction = require('./lib/transaction')
+const TurtleCoinCrypto = new Crypto()
 
 module.exports = {
   Block,
   BlockTemplate,
-  Crypto,
+  Crypto: TurtleCoinCrypto,
   CryptoNote,
   LevinPacket,
   Transaction
