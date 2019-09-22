@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: block.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: block.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Copyright (c) 2018-2019, The TurtleCoin Developers
+//
+// Please see the included LICENSE file for more information.
+
+'use strict'
+
+const BigInteger = require('./biginteger')
+const crypto = require('./turtlecoin-crypto')()
+const Reader = require('./reader')
+const Transaction = require('./transaction')
+const Writer = require('./writer')
+
+/**
+ * Class representing a CryptoNote Block
+ * @module Block
+ * @class
+ */
+class Block {
+  /**
+   * An object containing configuration options
+   * @typedef {Object} BlockConfig
+   * @property {number} [activateParentBlockVersion=2] - The block major version at which Parent Blocks were enabled
+   */
+
+  /**
+   * Initializes a new CryptoNote Block object
+   * @constructs
+   * @param {string|BlockConfig} [hexData] - the hexadecimal representation of an existing block or a configuration object
+   * @param {BlockConfig} [opts] - a configuration object
+   */
+  constructor (hexData, opts) {
+    hexData = hexData || {}
+    opts = opts || {}
+
+    /**
+     * The block major version at which Parent Blocks were enabled
+     * @type {number}
+     * @default 2
+     */
+    this.activateParentBlockVersion = hexData.activateParentBlockVersion || opts.activateParentBlockVersion || 2
+
+    /**
+     * The target difficulty of the block
+     * @type {number}
+     * @default 1
+     */
+    this.targetDifficulty = 1
+
+    /**
+     * The block major version
+     * @type {number}
+     * @default 0
+     */
+    this.majorVersion = 0
+
+    /**
+     * The block minor version
+     * @type {number}
+     * @default 0
+     */
+    this.minorVersion = 0
+
+    /**
+     * The block timestamp
+     * @type {number}
+     * @default 0
+     */
+    this.timestamp = 0
+
+    /**
+     * The previous block hash
+     * @type {string}
+     * @default 0000000000000000000000000000000000000000000000000000000000000000
+     */
+    this.previousBlockHash = '0000000000000000000000000000000000000000000000000000000000000000'
+
+    /**
+     * The block parent block structure
+     * @type {Object}
+     * @property {number} majorVersion=0 - The major version of the parent block
+     * @property {number} minorVersion=0 - The minor version of the parent block
+     * @property {string} previousBlockHash=0000000000000000000000000000000000000000000000000000000000000000 - The parent block previous block hash
+     * @property {number} transactionCount=0 - The number of transactions in the parent block
+     * @property {string[]} baseTransactionBranch - The parent block base transaction branch hash(es)
+     * @property {Transaction} minerTransaction - The parent block miner transaction
+     * @property {string[]} blockchainBranch - The parent block blockchain branch hash(es)
+     */
+    this.parentBlock = {
+      majorVersion: 0,
+      minorVersion: 0,
+      previousBlockHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      transactionCount: 0,
+      baseTransactionBranch: [],
+      minerTransaction: new Transaction(),
+      blockchainBranch: []
+    }
+
+    /**
+     * The previous block nonce
+     * @type {string}
+     * @default 0
+     */
+    this.nonce = 0
+
+    /**
+     * The previous block miner transaction
+     * @type {Transaction}
+     */
+    this.minerTransaction = new Transaction()
+
+    /**
+     * The transaction hashes in the block
+     * @type {string[]}
+     */
+    this.transactions = []
+
+    if (typeof hexData === 'string' &amp;&amp; isHex(hexData) &amp;&amp; hexData.length % 2 === 0) {
+      this.blob = hexData
+    }
+  }
+
+  /**
+   * The block base transaction branch
+   * @type {string}
+   * @readonly
+   */
+  get baseTransactionBranch () {
+    return calculateBaseTransactionBranch(this)
+  }
+
+  /**
+   * The hexadecimal representation of the block
+   * @type {string}
+   */
+  get blob () {
+    return this._toBlob()
+  }
+
+  set blob (hexData) {
+    if (!hexData || !isHex(hexData) || hexData.length % 2 !== 0) {
+      throw new Error('Invalid hexadecimal data supplied')
+    }
+    this._fromBlob(hexData)
+  }
+
+  /**
+   * The block extra nonce
+   * @type {number}
+   */
+  get extraNonce () {
+    return getExtraNonce(this)
+  }
+
+  set extraNonce (value) {
+    this.minerTransaction.extra = setExtraNonce(this.minerTransaction.extra, value)
+  }
+
+  /**
+   * The block hash
+   * @type {string}
+   * @readonly
+   */
+  get hash () {
+    return getBlockHash(toHashingBlob(this))
+  }
+
+  /**
+   * The hexadecimal representation of the block used for hashing (PoW)
+   * @type {string}
+   * @readonly
+   */
+  get hashingBlob () {
+    return toHashingBlob(this, true)
+  }
+
+  /**
+   * The block height
+   * @type {number|null}
+   * @readonly
+   */
+  get height () {
+    if (this.minerTransaction.inputs.length !== 0) {
+      return this.minerTransaction.inputs[0].blockIndex
+    } else {
+      return null
+    }
+  }
+
+  /**
+   * The block PoW hash
+   * @type {string}
+   * @readonly
+   */
+  get longHash () {
+    return getBlockPoWHash(this.majorVersion, toHashingBlob(this, true))
+  }
+
+  /**
+   * Whether the block meets the defined difficulty
+   * @type {boolean}
+   * @readonly
+   */
+  get meetsDiff () {
+    return this.hashMeetsDifficulty(this.longHash, this.targetDifficulty)
+  }
+
+  /**
+   * The block merkle root
+   * @type {string}
+   * @readonly
+   */
+  get merkleRoot () {
+    const merkleRootBlob = toMerkleHeaderBlob(this, this.activateParentBlockVersion)
+    return getBlockHash(merkleRootBlob)
+  }
+
+  /**
+   * The block transaction tree hash
+   * @type {string}
+   * @readonly
+   */
+  get transactionTreeHashData () {
+    return calculateTransactionTreeHashData(this)
+  }
+
+  /**
+   * Whether the PoW hash meets the supplied difficulty
+   * @param {string} hash - the PoW hash
+   * @param {number} difficulty - the difficulty to meet (or exceed)
+   * @returns {boolean} whether the hash meets or exceeds the supplied difficulty
+   */
+  hashMeetsDifficulty (hash, difficulty) {
+    return checkAgainstDifficulty(hash, difficulty)
+  }
+
+  /**
+   * Converts the hexadecimal representation of a block to the Block structure
+   * @private
+   * @param {string} blob - the hexadecimal representation of the block
+   * @returns {boolean} whether the operation succeeded
+   */
+  _fromBlob (blob) {
+    const reader = new Reader(blob)
+
+    this.majorVersion = reader.nextVarint()
+    this.minorVersion = reader.nextVarint()
+
+    if (this.majorVersion >= this.activateParentBlockVersion) {
+      this.previousBlockHash = reader.nextHash()
+      this.parentBlock.majorVersion = reader.nextVarint()
+      this.parentBlock.minorVersion = reader.nextVarint()
+    }
+
+    this.timestamp = reader.nextVarint()
+
+    if (this.majorVersion >= this.activateParentBlockVersion) {
+      this.parentBlock.previousBlockHash = reader.nextHash()
+    } else {
+      this.previousBlockHash = reader.nextHash()
+    }
+
+    this.nonce = reader.nextUInt32(true)
+
+    if (this.majorVersion >= this.activateParentBlockVersion) {
+      this.parentBlock.transactionCount = reader.nextVarint()
+
+      const [btbderr, baseTransactionBranchDepth] = crypto.tree_depth(this.parentBlock.transactionCount)
+
+      if (btbderr) throw new Error('Cannot calculate baseTransaction depth')
+
+      for (var btbd = 0; btbd &lt; baseTransactionBranchDepth; btbd++) {
+        this.parentBlock.baseTransactionBranch.push(reader.nextHash())
+      }
+
+      this.parentBlock.minerTransaction = new Transaction()
+      this.parentBlock.minerTransaction.version = reader.nextVarint()
+      this.parentBlock.minerTransaction.unlockTime = reader.nextVarint()
+
+      const pInputs = reader.nextVarint()
+
+      for (var i = 0; i &lt; pInputs; i++) {
+        this.parentBlock.minerTransaction.inputs.push({
+          type: reader.nextBytes().toString('hex'),
+          blockIndex: reader.nextVarint()
+        })
+      }
+
+      const pOutputs = reader.nextVarint()
+
+      for (var j = 0; j &lt; pOutputs; j++) {
+        this.parentBlock.minerTransaction.outputs.push({
+          amount: reader.nextVarint(),
+          type: reader.nextBytes().toString('hex'),
+          key: reader.nextHash()
+        })
+      }
+
+      const extraLength = reader.nextVarint()
+
+      this.parentBlock.minerTransaction.extra = reader.nextBytes(extraLength).toString('hex')
+
+      if (this.parentBlock.minerTransaction.version >= 2) {
+        this.parentBlock.minerTransaction.ignoredField = reader.nextVarint()
+      }
+
+      const blockchainBranchDepth = findMMTagDepth(this.parentBlock.minerTransaction.extra)
+
+      for (var bbd = 0; bbd &lt; blockchainBranchDepth; bbd++) {
+        this.parentBlock.blockchainBranch.push(reader.nextHash())
+      }
+    }
+
+    this.minerTransaction = new Transaction()
+
+    this.minerTransaction.version = reader.nextVarint()
+    this.minerTransaction.unlockTime = reader.nextVarint()
+
+    const inputs = reader.nextVarint()
+
+    for (var l = 0; l &lt; inputs; l++) {
+      this.minerTransaction.inputs.push({
+        type: reader.nextBytes().toString('hex'),
+        blockIndex: reader.nextVarint()
+      })
+    }
+
+    const outputs = reader.nextVarint()
+
+    for (var m = 0; m &lt; outputs; m++) {
+      this.minerTransaction.outputs.push({
+        amount: reader.nextVarint(),
+        type: reader.nextBytes().toString('hex'),
+        key: reader.nextHash()
+      })
+    }
+
+    const extraLength = reader.nextVarint()
+
+    this.minerTransaction.extra = reader.nextBytes(extraLength).toString('hex')
+
+    const txnCount = reader.nextVarint()
+
+    for (var n = 0; n &lt; txnCount; n++) {
+      this.transactions.push(reader.nextHash())
+    }
+
+    if (reader.unreadBytes > 0) {
+      throw new Error('Unhandled data in block blob detected')
+    }
+
+    return true
+  }
+
+  /**
+   * Serializes the Block structure to its hexadecimal representation
+   * @private
+   * @returns {string} the hexadecimal representation of the block
+   */
+  _toBlob () {
+    const writer = new Writer()
+
+    writer.writeVarint(this.majorVersion)
+    writer.writeVarint(this.minorVersion)
+
+    if (this.majorVersion >= this.activateParentBlockVersion) {
+      writer.writeHash(this.previousBlockHash)
+      writer.writeVarint(this.parentBlock.majorVersion)
+      writer.writeVarint(this.parentBlock.minorVersion)
+    }
+
+    writer.writeVarint(this.timestamp)
+
+    if (this.majorVersion >= this.activateParentBlockVersion) {
+      writer.writeHash(this.parentBlock.previousBlockHash)
+    } else {
+      writer.writeHash(this.previousBlockHash)
+    }
+
+    writer.writeUInt32(this.nonce, true)
+
+    if (this.majorVersion >= this.activateParentBlockVersion) {
+      writer.writeVarint(this.parentBlock.transactionCount)
+
+      this.parentBlock.baseTransactionBranch.forEach((hash) => {
+        writer.writeHash(hash)
+      })
+
+      writer.writeVarint(this.parentBlock.minerTransaction.version)
+      writer.writeVarint(this.parentBlock.minerTransaction.unlockTime)
+
+      writer.writeVarint(this.parentBlock.minerTransaction.inputs.length)
+
+      this.parentBlock.minerTransaction.inputs.forEach((input) => {
+        writer.writeHex(input.type)
+        writer.writeVarint(input.blockIndex)
+      })
+
+      writer.writeVarint(this.parentBlock.minerTransaction.outputs.length)
+
+      this.parentBlock.minerTransaction.outputs.forEach((output) => {
+        writer.writeVarint(output.amount)
+        writer.writeHex(output.type)
+        writer.writeHash(output.key)
+      })
+
+      writer.writeVarint(this.parentBlock.minerTransaction.extraBlob.length / 2)
+      writer.writeHex(this.parentBlock.minerTransaction.extraBlob)
+
+      if (this.parentBlock.minerTransaction.version >= 2) {
+        writer.writeVarint(this.parentBlock.minerTransaction.ignoredField)
+      }
+
+      this.parentBlock.blockchainBranch.forEach((branch) => {
+        writer.writeHash(branch)
+      })
+    }
+
+    writer.writeVarint(this.minerTransaction.version)
+    writer.writeVarint(this.minerTransaction.unlockTime)
+
+    writer.writeVarint(this.minerTransaction.inputs.length)
+
+    this.minerTransaction.inputs.forEach((input) => {
+      writer.writeHex(input.type)
+      writer.writeVarint(input.blockIndex)
+    })
+
+    writer.writeVarint(this.minerTransaction.outputs.length)
+
+    this.minerTransaction.outputs.forEach((output) => {
+      writer.writeVarint(output.amount)
+      writer.writeHex(output.type)
+      writer.writeHash(output.key)
+    })
+
+    writer.writeVarint(this.minerTransaction.extraBlob.length / 2)
+    writer.writeHex(this.minerTransaction.extraBlob)
+
+    writer.writeVarint(this.transactions.length)
+
+    this.transactions.forEach((txn) => {
+      writer.writeHash(txn)
+    })
+
+    return writer.blob
+  }
+}
+
+/* These methods are not exported */
+
+function calculateBaseTransactionBranch (block) {
+  const transactions = [block.minerTransaction.hash]
+  block.transactions.forEach(txn => transactions.push(txn))
+  const [err, treeBranch] = crypto.tree_branch(transactions)
+  if (err) throw new Error('Cannot generate the tree branch of the transactions')
+  return treeBranch
+}
+
+function calculateTransactionTreeHashData (block) {
+  const transactions = [block.minerTransaction.hash]
+  block.transactions.forEach(txn => transactions.push(txn))
+  const [err, treeHash] = crypto.tree_hash(transactions)
+  if (err) throw new Error('Cannot generate tree hash of the transactions')
+  return { hash: treeHash, length: transactions.length }
+}
+
+function checkAgainstDifficulty (hash, difficulty) {
+  const reversedHash = hash.match(/[0-9a-f]{2}/gi).reverse().join('')
+
+  const hashDiff = BigInteger.parse(reversedHash, 16).multiply(difficulty)
+
+  const maxValue = BigInteger.parse('ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 16)
+
+  return (hashDiff.compare(maxValue) === -1)
+}
+
+function findExtraNonce (blob) {
+  const reader = new Reader(blob)
+
+  while (reader.unreadBytes > 0) {
+    var offset, nonceLength, lengthBytes, safeNonceLength, extraNonce, mmLength
+
+    const tag = reader.nextVarint()
+
+    switch (tag) {
+      case 0:
+        break
+      case 1:
+        reader.skip(32)
+        break
+      case 2:
+        offset = reader.currentOffset
+        nonceLength = reader.nextVarint()
+        lengthBytes = reader.currentOffset - offset
+        safeNonceLength = (nonceLength > 4) ? 4 : (nonceLength === 3) ? 2 : nonceLength
+        extraNonce = reader.nextUInt(safeNonceLength, true)
+        return { offset, lengthBytes: lengthBytes, bytes: nonceLength, value: extraNonce }
+      case 3:
+        mmLength = reader.nextVarint()
+        reader.skip(mmLength)
+        break
+    }
+  }
+
+  return { offset: reader.currentOffset, lengthBytes: 0, bytes: 0, value: 0 }
+}
+
+function findMMTagDepth (blob) {
+  const reader = new Reader(blob)
+
+  while (reader.unreadBytes > 0) {
+    const tag = { tag: reader.nextVarint() }
+
+    switch (tag.tag) {
+      case 0:
+        break
+      case 1:
+        reader.skip(32)
+        break
+      case 2:
+        reader.skip(reader.nextVarint())
+        break
+      case 3:
+        reader.nextVarint()
+        return reader.nextVarint()
+      default:
+        break
+    }
+  }
+
+  return 0
+}
+
+function getBlockHash (blob) {
+  const reader = new Reader(blob)
+  const writer = new Writer()
+
+  writer.writeVarint(reader.length)
+  writer.writeBytes(reader.nextBytes(reader.unreadBytes))
+
+  const [err, hash] = crypto.cn_fast_hash(writer.blob)
+
+  if (err) return new Error('Could not calculate block hash')
+
+  return hash
+}
+
+function getBlockPoWHash (majorVersion, blob) {
+  var err
+  var hash
+
+  switch (majorVersion) {
+    case 1:
+    case 2:
+    case 3:
+      [err, hash] = crypto.cn_slow_hash_v0(blob)
+      break
+    case 4:
+      [err, hash] = crypto.cn_lite_slow_hash_v1(blob)
+      break
+    case 5:
+      [err, hash] = crypto.cn_turtle_lite_slow_hash_v2(blob)
+      break
+    case 6:
+      [err, hash] = crypto.chukwa_slow_hash(blob)
+      break
+    default:
+      throw new Error('Unhandled major block version')
+  }
+
+  if (err) return new Error('Could not calculate block PoW hash')
+
+  return hash
+}
+
+function getExtraNonce (block) {
+  if (block.minerTransaction.extra.length === 0) return 0
+
+  const extraNonce = findExtraNonce(block.minerTransaction.extra)
+
+  return extraNonce.value
+}
+
+function isHex (str) {
+  const regex = new RegExp('^[0-9a-fA-F]+$')
+  return regex.test(str)
+}
+
+function setExtraNonce (extra, value, length) {
+  if (value > 4294967295) {
+    throw new Error('Cannot store value greater than a UInt32')
+  }
+
+  const extraNonce = findExtraNonce(extra)
+
+  length = length || extraNonce.bytes
+
+  const reader = new Reader(extra)
+  const writer = new Writer()
+
+  writer.writeBytes(reader.nextBytes(extraNonce.offset))
+
+  reader.skip(extraNonce.lengthBytes) // skip the nonce length
+
+  const nonce = new Writer()
+  nonce.writeUInt32(value, true)
+
+  if (reader.unreadBytes >= nonce.length) {
+    reader.skip(nonce.length)
+  }
+
+  for (var i = nonce.length; i &lt; length; i++) {
+    if (reader.unreadBytes > 0) {
+      nonce.writeBytes(reader.nextBytes())
+    } else {
+      nonce.writeHex('00')
+    }
+  }
+
+  /* If we are adding a new field, then we need to
+     add the tag to identify the field */
+  if (extraNonce.bytes === 0) {
+    writer.writeVarint(2)
+  }
+
+  writer.writeVarint(nonce.length)
+  writer.writeHex(nonce.blob)
+
+  if (reader.unreadBytes > 0) {
+    writer.writeBytes(reader.nextBytes(reader.unreadBytes))
+  }
+
+  return writer.blob
+}
+
+function toHashingBlob (block, headerOnly) {
+  /* block value only matters for majorVersion >= 2 */
+  headerOnly = headerOnly || false
+
+  const writer = new Writer()
+
+  writer.writeVarint(block.majorVersion)
+  writer.writeVarint(block.minorVersion)
+
+  if (block.majorVersion >= block.activateParentBlockVersion) {
+    writer.writeHash(block.previousBlockHash)
+  } else {
+    writer.writeVarint(block.timestamp)
+    writer.writeHash(block.previousBlockHash)
+    writer.writeUInt32(block.nonce, true)
+  }
+
+  const txnTreeHashData = calculateTransactionTreeHashData(block)
+
+  writer.writeHash(txnTreeHashData.hash)
+
+  writer.writeVarint(txnTreeHashData.length)
+
+  if (block.majorVersion >= block.activateParentBlockVersion) {
+    if (headerOnly) {
+      writer.clear()
+    }
+
+    writer.writeVarint(block.parentBlock.majorVersion)
+    writer.writeVarint(block.parentBlock.minorVersion)
+    writer.writeVarint(block.timestamp)
+    writer.writeHash(block.parentBlock.previousBlockHash)
+    writer.writeUInt32(block.nonce, true)
+
+    const [parentErr, parentTreeHash] = crypto.tree_hash_from_branch(block.parentBlock.baseTransactionBranch, block.parentBlock.minerTransaction.hash, 0)
+
+    if (parentErr) throw new Error('Cannot generate parent block transaction tree_hash_from_branch')
+
+    writer.writeHash(parentTreeHash)
+
+    writer.writeVarint(block.parentBlock.transactionCount)
+
+    if (headerOnly) {
+      return writer.blob
+    }
+
+    block.parentBlock.baseTransactionBranch.forEach((branch) => {
+      writer.writeHash(branch)
+    })
+
+    writer.writeHex(block.parentBlock.minerTransaction.blob)
+
+    if (block.parentBlock.minerTransaction.version >= 2) {
+      writer.writeVarint(block.parentBlock.minerTransaction.ignoredField)
+    }
+
+    block.parentBlock.blockchainBranch.forEach((branch) => {
+      writer.writeHash(branch)
+    })
+  }
+
+  return writer.blob
+}
+
+function toMerkleHeaderBlob (block, activateParentBlockVersion) {
+  activateParentBlockVersion = activateParentBlockVersion || 2
+
+  const writer = new Writer()
+
+  writer.writeVarint(block.majorVersion)
+  writer.writeVarint(block.minorVersion)
+
+  if (block.majorVersion &lt; activateParentBlockVersion) {
+    writer.writeVarint(block.timestamp)
+  }
+
+  writer.writeHash(block.previousBlockHash)
+
+  if (writer.majorVersion &lt; activateParentBlockVersion) {
+    writer.writeUInt32(block.nonce, true)
+  }
+
+  const txnTreeHashData = calculateTransactionTreeHashData(block)
+
+  writer.writeHash(txnTreeHashData.hash)
+
+  writer.writeVarint(txnTreeHashData.length)
+
+  return writer.blob
+}
+
+module.exports = Block
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="external-Crypto.html">Crypto</a></li></ul><h3>Classes</h3><ul><li><a href="Block.html">Block</a></li><li><a href="BlockTemplate.html">BlockTemplate</a></li><li><a href="CryptoNote.html">CryptoNote</a></li><li><a href="LevinPacket.html">LevinPacket</a></li><li><a href="Transaction.html">Transaction</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Sep 22 2019 11:50:05 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

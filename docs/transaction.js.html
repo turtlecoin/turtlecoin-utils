@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: transaction.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: transaction.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Copyright (c) 2018-2019, The TurtleCoin Developers
+//
+// Please see the included LICENSE file for more information.
+
+'use strict'
+
+const crypto = require('./turtlecoin-crypto/index')()
+const Reader = require('./reader')
+const TransactionVersion2Suffix = 'bc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a0000000000000000000000000000000000000000000000000000000000000000'
+const Writer = require('./writer')
+
+/**
+ * Class representing a CryptoNote Transaction
+ * @module Transaction
+ * @class
+ */
+class Transaction {
+  /**
+   * Initializes a new CryptoNote Transaction object
+   * @constructs
+   * @param {string} [hexData] - the hexadecimal representation of an existing transaction
+   */
+  constructor (hexData) {
+    /* Setup transaction defaults */
+
+    /**
+     * The version number of the transaction
+     * @type {number}
+     * @default 1
+     */
+    this.version = 1
+
+    /**
+     * The unlock time of the transaction
+     * @type {number}
+     * @default 0
+     */
+    this.unlockTime = 0
+
+    /**
+     * The transaction inputs
+     * @type {Object[]}
+     */
+    this.inputs = []
+
+    /**
+     * The transaction outputs
+     * @type {Object[]}
+     */
+    this.outputs = []
+
+    /**
+     * The transaction extra tags/hex
+     * @type {Object[]|string}
+     */
+    this.extra = []
+
+    /**
+     * The transaction signatures
+     * @type {Object[]}
+     */
+    this.signatures = []
+
+    /**
+     * Ignored field only used in some transactions
+     * @type {boolean}
+     */
+    this.ignoredField = false
+
+    /* this property is largely ignored. It is nothing but a
+     storage mechanism for backwards compatibility */
+    this.transactionKeys = {
+      privateKey: null,
+      publicKey: null
+    }
+
+    /* If we were supplied with hex data as part of our
+     constructor, try to load it */
+    if (hexData &amp;&amp; isHex(hexData) &amp;&amp; hexData.length % 2 === 0) {
+      this.blob = hexData
+    }
+  }
+
+  /**
+   * The amount of the transaction
+   * @type {number}
+   * @readonly
+   */
+  get amount () {
+    var amount = 0
+
+    this.inputs.forEach((input) => {
+      if (input.type === '02') {
+        amount += input.amount
+      }
+    })
+
+    return amount
+  }
+
+  /**
+   * The hexadecimal representation of the transaction
+   * @type {string}
+   */
+  get blob () {
+    return this._toBlob(false)
+  }
+
+  set blob (hexData) {
+    this._fromBlob(hexData)
+  }
+
+  /**
+   * The hexadecimal representation of the transaction extra information
+   * @type {string}
+   * @readonly
+   */
+  get extraBlob () {
+    return extraToBlob(this.extra).toString('hex')
+  }
+
+  /**
+   * The transaction fee of the transaction
+   * @type {number}
+   * @readonly
+   */
+  get fee () {
+    var inputAmount = this.amount
+
+    if (inputAmount === 0) {
+      return 0
+    }
+
+    var outputAmount = 0
+
+    this.outputs.forEach((output) => {
+      outputAmount += output.amount
+    })
+
+    return inputAmount - outputAmount
+  }
+
+  /**
+   * The transaction hash
+   * @type {string}
+   * @readonly
+   */
+  get hash () {
+    const [err, hash] = crypto.cn_fast_hash(this.blob)
+
+    /* Version 2 transactions are actualy double hashed to get the hash */
+    if (this.version >= 2) {
+      const [err, hash2] = crypto.cn_fast_hash(hash + TransactionVersion2Suffix)
+
+      if (!err) return hash2
+
+      return false
+    }
+
+    if (!err) return hash
+
+    return false
+  }
+
+  /**
+   * The hexadecimal representation of the transaction prefix
+   * @type {string}
+   * @readonly
+   */
+  get prefix () {
+    return this._toBlob(true)
+  }
+
+  /**
+   * The transaction prefix hash
+   * @type {string}
+   * @readonly
+   */
+  get prefixHash () {
+    const [err, hash] = crypto.cn_fast_hash(this.prefix)
+
+    /* Version 2 transactions are actualy double hashed to get the hash */
+    if (this.version >= 2) {
+      const [err, hash2] = crypto.cn_fast_hash(hash + TransactionVersion2Suffix)
+
+      if (!err) return hash2
+
+      return false
+    }
+
+    if (!err) return hash
+
+    return false
+  }
+
+  /**
+   * Adds a transaction public key to the Transaction's extra information
+   * @param {string} publicKey - the public key of the transaction
+   * @returns {boolean} if succeeded
+   */
+  addPublicKey (publicKey) {
+    /* This method only works if extra is an array of tags, if it's free form
+     data via a hexadecimal string, we cannot won't be touching the free form
+     string */
+    if (!Array.isArray(this.extra)) throw new Error('Transaction Extra must ben an array of tags')
+
+    if (!isHex64(publicKey)) throw new Error('Transaction Public Key must 64 hexadecimal characters')
+
+    /* Delete any previous public key tags from
+     the current extra data */
+    const extra = []
+
+    this.extra.forEach((tag) => {
+      if (tag.tag !== 1) extra.push(tag)
+    })
+
+    this.extra = extra
+
+    /* Build our public key tag and add to extra */
+    const extraTag = {
+      tag: 1,
+      publicKey: publicKey
+    }
+
+    /* Add the new public key tag to the extra array */
+    this.extra.push(extraTag)
+
+    /* Also store it on the transaction keys property */
+    this.transactionKeys.publicKey = publicKey
+
+    return true
+  }
+
+  /**
+   * Adds a payment ID to the Transaction's extra information
+   * @param {string} paymentId - the payment ID for the transaction
+   * @returns {boolean} if succeeded
+   */
+  addPaymentId (paymentId) {
+    /* This method only works if extra is an array of tags, if it's free form
+     data via a hexadecimal string, we cannot won't be touching the free form
+     string */
+    if (!Array.isArray(this.extra)) throw new Error('Transaction Extra must ben an array of tags')
+
+    if (!isHex64(paymentId)) throw new Error('Payment ID must be 64 hexadecimal characters')
+
+    /* rebuild our extra tag without any current nonce
+     payment id information and add ours at the end */
+    const extra = []
+    var found = false
+
+    this.extra.forEach((tag) => {
+      if (tag.tag !== 2) return extra.push(tag)
+
+      const nonceTags = []
+
+      tag.nonces.forEach((nonceTag) => {
+        if (nonceTag.tag !== 0) nonceTags.push(nonceTag)
+      })
+
+      nonceTags.push({
+        tag: 0,
+        paymentId: paymentId
+      })
+
+      extra.push(nonceTags)
+
+      found = true
+    })
+
+    if (!found) {
+      extra.push({ tag: 2, nonces: [{ tag: 0, paymentId: paymentId }] })
+    }
+
+    this.extra = extra
+
+    return true
+  }
+
+  /**
+   * Parses a Transaction strcuture from a hexadecimal representation of a transaction
+   * @param {string} blob - The hexadecimal string
+   * @returns {boolean} if the operation succeeded
+   * @private
+   */
+  _fromBlob (blob) {
+    const reader = new Reader(Buffer.from(blob, 'hex'))
+
+    this.inputs = []
+    this.outputs = []
+    this.extra = []
+    this.signatures = []
+
+    this.version = reader.nextVarint()
+    this.unlockTime = reader.nextVarint()
+
+    const inputsCount = reader.nextVarint()
+
+    for (var i = 0; i &lt; inputsCount; i++) {
+      var offsetsLength
+
+      const input = {}
+
+      input.type = reader.nextBytes().toString('hex')
+
+      switch (input.type) {
+        case '02':
+          input.amount = reader.nextVarint()
+          input.keyOffsets = []
+          offsetsLength = reader.nextVarint()
+          for (var j = 0; j &lt; offsetsLength; j++) {
+            input.keyOffsets.push(reader.nextVarint())
+          }
+          input.keyImage = reader.nextHash()
+          break
+        case 'ff':
+          input.blockIndex = reader.nextVarint()
+          break
+        default:
+          throw new Error('Unhandled transaction input type')
+      }
+      this.inputs.push(input)
+    }
+
+    const outputsCount = reader.nextVarint()
+
+    for (i = 0; i &lt; outputsCount; i++) {
+      const output = {}
+
+      output.amount = reader.nextVarint()
+      output.type = reader.nextBytes().toString('hex')
+
+      switch (output.type) {
+        case '02':
+          output.key = reader.nextHash()
+          break
+        default:
+          throw new Error('Unhandled transaction output type')
+      }
+      this.outputs.push(output)
+    }
+
+    /* Handle the tx extra */
+    const extraSize = reader.nextVarint()
+    const extraBlob = reader.nextBytes(extraSize)
+    this.extra = extraFromBlob(extraBlob)
+
+    this.extra.forEach((field) => {
+      if (field.tag === 1) {
+        this.transactionKeys.publicKey = field.publicKey
+      }
+    })
+
+    /* If there are bytes remaining and they are divisible by 64,
+     then we have signatures remaining at the end */
+    if (reader.unreadBytes > 0 &amp;&amp; reader.unreadBytes % 64 === 0) {
+    /* Calculate the number of mixins we expect */
+      const mixins = reader.unreadBytes / 64 / this.inputs.length
+
+      if (mixins % 1 !== 0) throw new Error('Unstructured data found at the end of transaction blob')
+
+      /* Loop through our inputs */
+      for (i = 0; i &lt; this.inputs.length; i++) {
+        const signatures = []
+        for (j = 0; j &lt; mixins; j++) {
+          signatures.push(reader.nextBytes(64).toString('hex'))
+        }
+        this.signatures.push(signatures)
+      }
+    } else if (reader.unreadBytes > 0) {
+      throw new Error('Unstructured data found at the end of transaction blob')
+    }
+
+    return true
+  }
+
+  /**
+   * Serializes a Transaction strcuture to a hexadecimal representation of a transaction
+   * @param {boolean} [headerOnly=false] - if we should only serialize the transaction header
+   * @returns {boolean} if the operation succeeded
+   * @private
+   */
+  _toBlob (headerOnly) {
+    headerOnly = headerOnly || false
+
+    const writer = new Writer()
+
+    writer.writeVarint(this.version)
+    writer.writeVarint(this.unlockTime)
+    writer.writeVarint(this.inputs.length)
+
+    this.inputs.forEach((input) => {
+      writer.writeHex(input.type)
+
+      switch (input.type) {
+        case '02':
+          writer.writeVarint(input.amount)
+          writer.writeVarint(input.keyOffsets.length)
+          input.keyOffsets.forEach(offset => writer.writeVarint(offset))
+          writer.writeHash(input.keyImage)
+          break
+        case 'ff':
+          writer.writeVarint(input.blockIndex)
+          break
+        default:
+          throw new Error('Unhandled transaction input type')
+      }
+    })
+
+    writer.writeVarint(this.outputs.length)
+
+    this.outputs.forEach((output) => {
+      switch (output.type) {
+        case '02':
+          writer.writeVarint(output.amount)
+          writer.writeHex(output.type)
+          writer.writeHash(output.key)
+          break
+        default:
+          throw new Error('Unhandled transaction output type')
+      }
+    })
+
+    const extra = extraToBlob(this.extra)
+    writer.writeVarint(extra.length)
+    writer.writeBytes(extra)
+
+    if (!headerOnly &amp;&amp; this.signatures.length !== 0) {
+      if (this.inputs.length !== this.signatures.length) {
+        throw new Error('Number of signatures does not equal the number of inputs used.')
+      }
+
+      for (var i = 0; i &lt; this.inputs.length; i++) {
+        for (var j = 0; j &lt; this.signatures[i].length; j++) {
+          writer.writeHex(this.signatures[i][j])
+        }
+      }
+    }
+
+    return writer.blob
+  }
+}
+
+function extraToBlob (extras) {
+  /* Define our writer helper */
+  const writer = new Writer()
+
+  if (Array.isArray(extras)) {
+    /* Loop through the extra fields */
+    extras.forEach((extra) => {
+      /* Write out the tag */
+      writer.writeVarint(extra.tag)
+      var data
+
+      /* Figure out which tag we're working with */
+      switch (extra.tag) {
+        case 1:
+          /* Write the transaction public key to the buffer */
+          writer.writeHash(extra.publicKey)
+          break
+        case 2:
+          /* Set up a new writer to write our nonce to */
+          data = new Writer()
+
+          extra.nonces.forEach((nonce) => {
+            data.writeVarint(nonce.tag)
+
+            switch (nonce.tag) {
+              case 0:
+                data.writeHash(nonce.paymentId)
+                break
+              default:
+                throw new Error('Unhandled transaction nonce data')
+            }
+          })
+
+          /* Write out the length of our nonce and finally the nonce */
+          writer.writeVarint(data.length)
+          writer.writeHex(data.blob)
+          break
+        case 3:
+          /* Set up a new writer to write the MM tag info */
+          data = new Writer()
+          data.writeVarint(extra.depth)
+          data.writeHash(extra.merkleRoot)
+          /* Write out the length of the information and finally the data */
+          writer.writeVarint(data.length)
+          writer.writeHex(data.blob)
+          break
+      }
+    })
+  } else {
+    writer.writeHex(extras)
+  }
+
+  return writer.buffer
+}
+
+function extraFromBlob (blob) {
+  /* We were passed a Buffer and we're going to set up
+     a new reader for it to make life easier */
+  const reader = new Reader(blob)
+
+  /* Set up our result for returning what we find */
+  const result = []
+
+  /* We're going to shadow this later */
+  var length
+
+  /* While there's still data to read, we need to loop
+     through it until we're done */
+  while (reader.currentOffset &lt; blob.length) {
+    var nonceReader
+
+    /* Get the TX extra tag */
+    const tag = { tag: reader.nextVarint() }
+
+    switch (tag.tag) {
+      case 0: // Padding?
+        break
+      case 1: // Transaction Public Key
+        tag.publicKey = reader.nextHash()
+        break
+      case 2: // Extra Nonce
+        length = reader.nextVarint()
+        tag.nonces = []
+        nonceReader = new Reader(reader.nextBytes(length))
+
+        while (nonceReader.unreadBytes > 0) {
+          const nonceTag = { tag: nonceReader.nextVarint() }
+
+          switch (nonceTag.tag) {
+            case 0:
+              nonceTag.paymentId = nonceReader.nextHash()
+              break
+            default:
+              throw new Error('Unhandled transaction nonce data')
+          }
+
+          tag.nonces.push(nonceTag)
+        }
+        break
+      case 3: // Merged Mining Tag
+        length = reader.nextVarint()
+        tag.depth = reader.nextVarint()
+        tag.merkleRoot = reader.nextHash()
+        break
+    }
+
+    result.push(tag)
+  }
+
+  /* We have what we need so we'll kick it back */
+  return result
+}
+
+function isHex (str) {
+  const regex = new RegExp('^[0-9a-fA-F]+$')
+  return regex.test(str)
+}
+
+function isHex64 (str) {
+  const regex = new RegExp('^[0-9a-fA-F]{64}$')
+  return regex.test(str)
+}
+
+module.exports = Transaction
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Externals</h3><ul><li><a href="external-Crypto.html">Crypto</a></li></ul><h3>Classes</h3><ul><li><a href="Block.html">Block</a></li><li><a href="BlockTemplate.html">BlockTemplate</a></li><li><a href="CryptoNote.html">CryptoNote</a></li><li><a href="LevinPacket.html">LevinPacket</a></li><li><a href="Transaction.html">Transaction</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Sep 22 2019 11:50:05 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
