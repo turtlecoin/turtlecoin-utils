@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "npm install && standard && node tests/tests.js && node tests/blockTests.js && node tests/p2pTests.js",
-    "build-docs": "jsdoc -d docs -r -R README.md lib/cryptonote.js lib/block.js lib/transaction.js lib/blocktemplate.js lib/levinpacket.js lib/turtlecoin-crypto/index.js"
+    "build-docs": "jsdoc -c jsdoc.json"
   },
   "keywords": [
     "TurtleCoin",

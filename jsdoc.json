@@ -1,0 +1,31 @@
+{
+  "title": "TurtleCoin Javascript Utilities - Documentation",
+  "plugins": [],
+  "recurseDepth": 10,
+  "source": {
+    "include": [
+      "README.md",
+      "lib/block.js",
+      "lib/blocktemplate.js",
+      "lib/turtlecoin-crypto/index.js",
+      "lib/cryptonote.js",
+      "lib/levinpacket.js",
+      "lib/transaction.js"
+    ]
+  },
+  "sourceType": "module",
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": [
+      "jsdoc",
+      "closure"
+    ]
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  },
+  "opts": {
+    "destination": "./docs"
+  }
+}
