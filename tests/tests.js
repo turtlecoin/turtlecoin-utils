@@ -216,6 +216,91 @@ describe('Wallets', () => {
   })
 })
 
+describe('SubWallets', () => {
+  const baseWallet = cnUtil.createAddressFromSeed('dd0c02d3202634821b4d9d91b63d919725f5c3e97e803f3512e52fb0dc2aab0c')
+  const subWallets = [
+    cnUtil.createSubWalletFromPrivateSpendKey(baseWallet.spend.privateKey, 0),
+    cnUtil.createSubWalletFromPrivateSpendKey(baseWallet.spend.privateKey, 1),
+    cnUtil.createSubWalletFromPrivateSpendKey(baseWallet.spend.privateKey, 2),
+    cnUtil.createSubWalletFromPrivateSpendKey(baseWallet.spend.privateKey, 64),
+    cnUtil.createSubWalletFromPrivateSpendKey(baseWallet.spend.privateKey, 65)
+  ]
+
+  it('creates subwallets', () => {
+    assert((subWallets[0]) && (subWallets[1]) && (subWallets[2]) && (subWallets[3]) && (subWallets[4]))
+  })
+
+  it('Subwallet #0 matches base wallet', () => {
+    assert(baseWallet.spend.privateKey, subWallets[0].spend.privateKey)
+  })
+
+  it('Subwallet #0 does not match any other subwallets', () => {
+    for (var i = 1; i < subWallets.length; i++) {
+      assert(subWallets[0].spend.privateKey !== subWallets[i].spend.privateKey)
+    }
+  })
+
+  it('Subwallet #1 does not match any other subwallets', () => {
+    for (var i = 2; i < subWallets.length; i++) {
+      assert(subWallets[1].spend.privateKey !== subWallets[i].spend.privateKey)
+    }
+  })
+
+  it('Subwallet #2 does not match any other subwallets', () => {
+    for (var i = 3; i < subWallets.length; i++) {
+      assert(subWallets[2].spend.privateKey !== subWallets[i].spend.privateKey)
+    }
+  })
+
+  it('Subwallet #64 does not match any other subwallets', () => {
+    for (var i = 4; i < subWallets.length; i++) {
+      assert(subWallets[3].spend.privateKey !== subWallets[i].spend.privateKey)
+    }
+  })
+
+  it('Subwallet #2 not found from Subwallet #1', () => {
+    var key = cnUtil.cnFastHash(subWallets[1].spend.privateKey)
+    assert(key !== subWallets[2].spend.privateKey)
+    assert(cnUtil.scReduce32(key) !== subWallets[2].spend.privateKey)
+  })
+
+  it('Subwallet #64 not found from Subwallet #1', () => {
+    var key = subWallets[1].spend.privateKey
+    for (var i = 0; i < 63; i++) {
+      key = cnUtil.cnFastHash(key)
+    }
+    assert(key !== subWallets[3].spend.privateKey)
+    assert(cnUtil.scReduce32(key) !== subWallets[3].spend.privateKey)
+  })
+
+  it('Subwallet #65 not found from Subwallet #1', () => {
+    var key = subWallets[1].spend.privateKey
+    for (var i = 0; i < 64; i++) {
+      key = cnUtil.cnFastHash(key)
+    }
+    assert(key !== subWallets[4].spend.privateKey)
+    assert(cnUtil.scReduce32(key) !== subWallets[4].spend.privateKey)
+  })
+
+  it('Subwallet #64 not found from Subwallet #2', () => {
+    var key = subWallets[2].spend.privateKey
+    for (var i = 0; i < 62; i++) {
+      key = cnUtil.cnFastHash(key)
+    }
+    assert(key !== subWallets[3].spend.privateKey)
+    assert(cnUtil.scReduce32(key) !== subWallets[3].spend.privateKey)
+  })
+
+  it('Subwallet #65 not found from Subwallet #2', () => {
+    var key = subWallets[2].spend.privateKey
+    for (var i = 0; i < 63; i++) {
+      key = cnUtil.cnFastHash(key)
+    }
+    assert(key !== subWallets[4].spend.privateKey)
+    assert(cnUtil.scReduce32(key) !== subWallets[4].spend.privateKey)
+  })
+})
+
 describe('Transactions', () => {
   describe('Create Transaction Outputs', () => {
     it('Amount: 1234567', () => {
