@@ -291,7 +291,7 @@ export class CryptoNote {
         subWalletIndex?: number,
         lang?: string,
         addressPrefix?: number
-    ): DeterministicSubWallet;
+    ): Address;
 }
 
 export interface CryptoNoteOptions {
@@ -376,15 +376,6 @@ export interface CryptoNoteOptions {
                              privateViewKey: string) => string;
 }
 
-export interface DeterministicSubWallet {
-    spend: Keys,
-    view: Keys,
-    address: string,
-    mnemonic: string | null,
-    seed: string | null,
-    subWalletIndex: number
-}
-
 export interface OutputToScan {
     key: string;
     index: number;
@@ -418,8 +409,8 @@ export interface Address {
     spend: Keys;
     view: Keys;
     address: string;
-    mnemonic: string;
-    seed: string;
+    mnemonic: string | null;
+    seed: string | null;
     subWalletIndex: number;
 }
 
