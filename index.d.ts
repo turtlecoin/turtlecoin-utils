@@ -773,7 +773,7 @@ export class CryptoNote {
      */
     public decodeAddress(
         address: string,
-        addressPrefix?: string): Address;
+        addressPrefix?: string): DecodedAddress;
 
     /**
      * Decodes the address prefix from the given address
@@ -1145,13 +1145,7 @@ export class Transaction {
     public addPublicKey(publicKey: string): boolean;
 }
 
-export interface Address {
-    publicViewKey: string;
-    publicSpendKey: string;
-    paymentId: string;
-    encodingPrefix: string;
-    prefix: number;
-    rawAddress: string;
+export interface Address extends Wallet {
 }
 
 export interface AddressPrefix {
@@ -1299,6 +1293,24 @@ export interface Config {
                          privateKey: string) => [boolean, string];
 }
 
+export interface CreatedTransaction extends GeneratedTransaction {
+}
+
+export interface CryptoNoteOptions extends Config {
+}
+
+export interface DecodedAddress {
+    publicViewKey: string;
+    publicSpendKey: string;
+    paymentId: string;
+    encodingPrefix: string;
+    prefix: number;
+    rawAddress: string;
+}
+
+export interface DecodedAddressPrefix extends AddressPrefix {
+}
+
 export interface GeneratedInput {
     transactionKey: KeyPair;
     publicEphemeral: string;
@@ -1316,9 +1328,15 @@ export interface GeneratedTransaction {
     hash: string;
 }
 
+export interface Keys extends KeyPair {
+}
+
 export interface KeyPair {
     privateKey: string;
     publicKey: string;
+}
+
+export interface OurOutput extends Output {
 }
 
 export interface Output {
@@ -1329,6 +1347,9 @@ export interface Output {
     type?: string;
     keyImage?: string;
     input?: GeneratedInput;
+}
+
+export interface OutputToScan extends Output {
 }
 
 export interface ParentBlock {
@@ -1398,6 +1419,15 @@ export interface TransactionOutput {
     type: string;
     amount: number;
     key: string;
+}
+
+export interface TxDestination extends GeneratedOutput {
+}
+
+export interface Vin extends TransactionInput {
+}
+
+export interface Vout extends TransactionOutput {
 }
 
 export interface Wallet {
