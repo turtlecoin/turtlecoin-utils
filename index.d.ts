@@ -1319,7 +1319,7 @@ export interface GeneratedInput {
 
 export interface GeneratedOutput {
     amount: number;
-    keys: Address;
+    keys: DecodedAddress;
 }
 
 export interface GeneratedTransaction {
