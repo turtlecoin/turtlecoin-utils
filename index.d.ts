@@ -708,7 +708,7 @@ export class CryptoNote {
         feeAmount: number,
         paymentId?: string,
         unlockTime?: number,
-        extra?: Buffer | Object | string): boolean | GeneratedTransaction;
+        extra?: Buffer | Object | string): GeneratedTransaction;
 
     /**
      * Creates a new Transaction using the supplied values in an asynchronous manner
@@ -730,7 +730,7 @@ export class CryptoNote {
         feeAmount: number,
         paymentId?: string,
         unlockTime?: number,
-        extra?: Buffer | Object | string): Promise<boolean | GeneratedTransaction>;
+        extra?: Buffer | Object | string): Promise<GeneratedTransaction>;
 
     /**
      * Creates pretty (base 10) outputs for the address and amount specified
@@ -763,7 +763,7 @@ export class CryptoNote {
         feeAmount: number,
         paymentId?: string,
         unlockTime?: number,
-        extra?: Buffer | Object | string): (boolean | GeneratedTransaction) | Promise<boolean | GeneratedTransaction>;
+        extra?: Buffer | Object | string): GeneratedTransaction | Promise<GeneratedTransaction>;
 
     /**
      * Decodes the given address into its respective parts
@@ -1312,8 +1312,8 @@ export interface DecodedAddressPrefix extends AddressPrefix {
 }
 
 export interface GeneratedInput {
-    transactionKey: KeyPair;
-    publicEphemeral: string;
+    transactionKey?: KeyPair;
+    publicEphemeral?: string;
     privateEphemeral?: string;
 }
 
@@ -1326,6 +1326,7 @@ export interface GeneratedTransaction {
     transaction: Transaction;
     rawTransaction: string;
     hash: string;
+    transactionKeys: KeyPair;
 }
 
 export interface Keys extends KeyPair {
