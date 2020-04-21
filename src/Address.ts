@@ -417,7 +417,7 @@ export class Address {
         writer.hash(this.m_keys.view.publicKey);
 
         if (this.m_cached.addressPrefix === writer.blob && this.m_cached.address.length !== 0) {
-            return this.m_cached.address;
+            return Base58.encode(this.m_cached.address);
         }
 
         const checksum = TurtleCoinCrypto.cn_fast_hash(writer.blob).slice(0, 8);
