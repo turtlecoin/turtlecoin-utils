@@ -445,8 +445,8 @@ export class Block {
      * Returns a hexadecimal (blob) representation of the block
      * @returns the hexadecimal representation of the block
      */
-    public toString(): string {
-        return this.toBuffer().toString('hex');
+    public toString(encoding: string = 'hex'): string {
+        return this.toBuffer().toString(encoding);
     }
 
     /**
