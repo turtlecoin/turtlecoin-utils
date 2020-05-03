@@ -505,8 +505,8 @@ export class Transaction {
      * @param [headerOnly] whether we should return just the prefix or not
      * @returns the hexadecimal (blob)  representation
      */
-    public toString(headerOnly: boolean = false): string {
-        return this.toBuffer(headerOnly).toString('hex');
+    public toString(headerOnly: boolean = false, encoding: string = 'hex'): string {
+        return this.toBuffer(headerOnly).toString(encoding);
     }
 }
 
