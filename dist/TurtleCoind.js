@@ -278,7 +278,7 @@ class TurtleCoind extends HTTPClient_1.HTTPClient {
      */
     rawSync(checkpoints = [], height = 0, timestamp = 0, skipCoinbaseTransactions = false, count = 100) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.post('sync/raw', {
+            return this.post('sync/raw', {
                 checkpoints,
                 count,
                 height,

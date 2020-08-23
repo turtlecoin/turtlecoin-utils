@@ -65,7 +65,7 @@
 					<h1>TurtleCoin Utilities</h1>
 				</a>
 				<p><a href="https://nodei.co/npm/turtlecoin-utils/"><img src="https://nodei.co/npm/turtlecoin-utils.png?downloads=true&stars=true" alt="NPM"></a></p>
-				<p><img src="https://img.shields.io/badge/node-%3E%3D6-blue.svg" alt="Prerequisite"> <a href="https://utils.turtlecoin.dev"><img src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" alt="Documentation"></a> <a href="https://github.com/turtlecoin/turtlecoin-utils/graphs/commit-activity"><img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance"></a> <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-yellow.svg" alt="License: GPL-3.0"></a> <a href="https://twitter.com/_TurtleCoin"><img src="https://img.shields.io/twitter/follow/_TurtleCoin.svg?style=social" alt="Twitter: TurtlePay"></a></p>
+				<p><img src="https://img.shields.io/badge/node-%3E%3D10-blue.svg" alt="Prerequisite"> <a href="https://utils.turtlecoin.dev"><img src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" alt="Documentation"></a> <a href="https://github.com/turtlecoin/turtlecoin-utils/graphs/commit-activity"><img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance"></a> <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-yellow.svg" alt="License: GPL-3.0"></a> <a href="https://twitter.com/_TurtleCoin"><img src="https://img.shields.io/twitter/follow/_TurtleCoin.svg?style=social" alt="Twitter: TurtlePay"></a></p>
 				<a href="#master-build-status" id="master-build-status" style="color: inherit; text-decoration: none;">
 					<h4>Master Build Status</h4>
 				</a>
@@ -74,7 +74,23 @@
 					<h4>Development Build Status</h4>
 				</a>
 				<p><a href="https://github.com/turtlecoin/turtlecoin-utils/actions"><img src="https://github.com/turtlecoin/turtlecoin-utils/workflows/CI%20Build%20Tests/badge.svg?branch=development" alt="Build Status"></a></p>
-				<p>This package contains code that wraps <a href="https://github.com/turtlecoin/turtlecoin-crypto">turtlecoin-crypto</a> primitives into an easier to use interface. This includes the ability to easily discover funds for a wallet, create transactions, sign transactions (ring signatures), create new wallets, verify addresses, and handful of other useful methods. These methods can then be wrapped into a Javascript-based wallet such as <a href="https://github.com/turtlecoin/turtlecoin-wallet-backend-js">turtlecoin-wallet-backend-js</a>.</p>
+				<a href="#overview" id="overview" style="color: inherit; text-decoration: none;">
+					<h2>Overview</h2>
+				</a>
+				<p>This package contains a number of different utility libraries that help with the following network and wallet based activities:</p>
+				<ul>
+					<li>Wallet (and Address) generation, verification, and encoding/decoding</li>
+					<li>Block handling, construction, decoding, and ID and PoW hash calculation</li>
+					<li>Block template handling</li>
+					<li>Multisig operations including Multisig participant message exchanges</li>
+					<li>RPC interations with TurtleCoind and Wallet-API</li>
+					<li>Network P2P communication protocols (connect to the P2P network directly)</li>
+					<li>Transaction construction facilities</li>
+					<li>Ledger hardware wallet interaction for the <a href="https://github.com/turtlecoin/ledger-turtlecoin-app">TurtleCoin® Ledger Wallet Application</a></li>
+					<li>Transaction handling, construction, decoding, hash calculations, TX_EXTRA parsing, etc</li>
+					<li>Deterministic subwallet generation</li>
+					<li>And much, much, more...</li>
+				</ul>
 				<p>If you experience any issues with this library, the best way to address such situations is to submit a Pull Request to resolve the issue you are running into.</p>
 				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 					<h2>Installation</h2>
