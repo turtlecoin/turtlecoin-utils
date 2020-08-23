@@ -302,7 +302,7 @@ export class TurtleCoind extends HTTPClient implements TurtleCoindTypes.ITurtleC
         timestamp = 0,
         skipCoinbaseTransactions = false,
         count = 100): Promise<TurtleCoindTypes.IRawSync> {
-        return await this.post('sync/raw', {
+        return this.post('sync/raw', {
             checkpoints,
             count,
             height,
