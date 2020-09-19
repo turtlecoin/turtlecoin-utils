@@ -309,17 +309,19 @@ export declare namespace TurtleCoindTypes {
          */
         blob: string;
     }
-    interface ITransactionInputCoinbase {
-        /**
-         * The block height of the coinbase input
-         */
-        height: number;
+    interface ITransactionInput {
         /**
          * The input type
          */
         type: string;
     }
-    interface ITransactionInputKey {
+    interface ITransactionInputCoinbase extends ITransactionInput {
+        /**
+         * The block height of the coinbase input
+         */
+        height: number;
+    }
+    interface ITransactionInputKey extends ITransactionInput {
         /**
          * The amount of the transaction input
          */
@@ -332,12 +334,14 @@ export declare namespace TurtleCoindTypes {
          * The global index offsets used in the input signature(s)
          */
         offsets: number[];
+    }
+    interface ITransactionOutput {
         /**
-         * The input type
+         * The output type
          */
         type: string;
     }
-    interface ITransactionOutputKey {
+    interface ITransactionOutputKey extends ITransactionOutput {
         /**
          * The amount of the transaction output
          */
@@ -346,11 +350,9 @@ export declare namespace TurtleCoindTypes {
          * The destination key of the transaction output
          */
         key: string;
-        /**
-         * The output type
-         */
-        type: string;
     }
+    type ITransactionPrefixInput = ITransactionInputCoinbase | ITransactionInputKey;
+    type ITransactionPrefixOutput = ITransactionOutputKey;
     interface ITransactionPrefix {
         /**
          * The hex representation of the data contained in the TX_EXTRA field
@@ -359,11 +361,11 @@ export declare namespace TurtleCoindTypes {
         /**
          * The transaction input(s)
          */
-        inputs: ITransactionInputCoinbase[] | ITransactionInputKey[];
+        inputs: ITransactionPrefixInput[];
         /**
          * The transaction output(s)
          */
-        outputs: ITransactionOutputKey[];
+        outputs: ITransactionPrefixOutput[];
         /**
          * The unlock time of the transaction
          */
