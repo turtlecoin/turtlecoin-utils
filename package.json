@@ -43,15 +43,15 @@
     "@ledgerhq/hw-transport-node-hid": "^5.22.0"
   },
   "dependencies": {
-    "@types/node-fetch": "^2.5.7",
-    "@types/ledgerhq__hw-transport": "^4.21.2",
     "@ledgerhq/hw-transport": "^5.22.0",
+    "@types/ledgerhq__hw-transport": "^4.21.2",
+    "@types/node-fetch": "^2.5.7",
     "abort-controller": "^3.0.0",
     "aes-js": "^3.1.2",
     "big-integer": "^1.6.48",
     "bytestream-helper": "0.0.10",
     "get-random-values": "^1.2.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "numeral": "^2.0.6",
     "semver": "^7.3.2",
     "turtlecoin-base58": "0.0.8",
