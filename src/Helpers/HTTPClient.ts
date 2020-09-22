@@ -4,7 +4,7 @@
 
 import * as http from 'http';
 import * as https from 'https';
-import fetch, { Headers } from 'node-fetch';
+import fetch, { Headers, Response } from 'node-fetch';
 import { format } from 'util';
 import { AbortController } from 'abort-controller/dist/abort-controller';
 
@@ -118,18 +118,7 @@ export class HTTPClient {
     }
 
     protected async delete (endpoint: string): Promise<void> {
-        const controller = new AbortController();
-
-        const timeout = setTimeout(() => controller.abort(), this.m_timeout);
-
-        const response = await fetch(this.url(endpoint), {
-            headers: this.headers,
-            agent: this.agent,
-            method: 'delete',
-            signal: controller.signal
-        });
-
-        clearTimeout(timeout);
+        const response = await this.fetch('delete', endpoint);
 
         if (!response.ok) {
             if (this.m_errorHandler) {
@@ -143,18 +132,7 @@ export class HTTPClient {
     }
 
     protected async get (endpoint: string): Promise<any> {
-        const controller = new AbortController();
-
-        const timeout = setTimeout(() => controller.abort(), this.m_timeout);
-
-        const response = await fetch(this.url(endpoint), {
-            headers: this.headers,
-            agent: this.agent,
-            method: 'get',
-            signal: controller.signal
-        });
-
-        clearTimeout(timeout);
+        const response = await this.fetch('get', endpoint);
 
         const body = await response.json();
 
@@ -170,19 +148,7 @@ export class HTTPClient {
     }
 
     protected async post (endpoint: string, body?: any): Promise<any> {
-        const controller = new AbortController();
-
-        const timeout = setTimeout(() => controller.abort(), this.m_timeout);
-
-        const response = await fetch(this.url(endpoint), {
-            headers: this.headers,
-            agent: this.agent,
-            method: 'post',
-            body: JSON.stringify(body || {}),
-            signal: controller.signal
-        });
-
-        clearTimeout(timeout);
+        const response = await this.fetch('post', endpoint, body);
 
         let responseBody;
 
@@ -202,19 +168,7 @@ export class HTTPClient {
     }
 
     protected async put (endpoint: string, body?: any): Promise<any> {
-        const controller = new AbortController();
-
-        const timeout = setTimeout(() => controller.abort(), this.m_timeout);
-
-        const response = await fetch(this.url(endpoint), {
-            headers: this.headers,
-            agent: this.agent,
-            method: 'put',
-            body: JSON.stringify(body || {}),
-            signal: controller.signal
-        });
-
-        clearTimeout(timeout);
+        const response = await this.fetch('put', endpoint, body);
 
         let responseBody;
 
@@ -249,7 +203,23 @@ export class HTTPClient {
         return response.result;
     }
 
-    private url (endpoint: string): string {
-        return format('%s://%s:%s/%s', this.protocol, this.host, this.port, endpoint);
+    private async fetch<T> (method: string, endpoint: string, body?: T): Promise<Response> {
+        const controller = new AbortController();
+
+        const url = format('%s://%s:%s/%s', this.protocol, this.host, this.port, endpoint);
+
+        const timeout = setTimeout(() => controller.abort(), this.m_timeout);
+
+        const response = await fetch(url, {
+            headers: this.headers,
+            agent: this.agent,
+            method: method,
+            body: (body) ? JSON.stringify(body) : undefined,
+            signal: controller.signal
+        });
+
+        clearTimeout(timeout);
+
+        return response;
     }
 }
