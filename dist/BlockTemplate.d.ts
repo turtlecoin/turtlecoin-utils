@@ -1,33 +1,11 @@
 /// <reference types="node" />
 import { Block } from './Block';
 import { Transaction } from './Transaction';
+import { TurtleCoindTypes } from './Types';
 /** @ignore */
 export declare enum SIZES {
     KEY = 32,
     CHECKSUM = 4
-}
-declare namespace Interfaces {
-    /**
-     * The daemon block template response
-     */
-    interface DaemonBlockTemplateResponse {
-        /**
-         * The block template supplied by the daemon
-         */
-        blocktemplate: string;
-        /**
-         * The blocktemplate difficulty supplied by the daemon
-         */
-        difficulty: number;
-        /**
-         * The blocktemplate height supplied by the daemon
-         */
-        height: number;
-        /**
-         * The reserved offset position for the blocktemplate supplied by the daemon
-         */
-        reservedOffset: number;
-    }
 }
 /**
  * Represents a BlockTemplate received from a Daemon that can be manipulated to perform mining operations
@@ -86,7 +64,7 @@ export declare class BlockTemplate {
      * Creates a new block template instance using the supplied daemon response
      * @param response the daemon response to the get_blocktemplate call
      */
-    static from(response: Interfaces.DaemonBlockTemplateResponse): Promise<BlockTemplate>;
+    static from(response: TurtleCoindTypes.IBlockTemplate): Promise<BlockTemplate>;
     protected m_blockTemplate: Buffer;
     protected m_difficulty: number;
     protected m_height: number;
@@ -110,4 +88,3 @@ export declare class BlockTemplate {
      */
     construct(nonce: number, branch?: string): Promise<Block>;
 }
-export {};

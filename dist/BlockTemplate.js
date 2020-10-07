@@ -130,11 +130,11 @@ class BlockTemplate {
     static from(response) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = new BlockTemplate();
-            result.m_blockTemplate = Buffer.from(response.blocktemplate, 'hex');
+            result.m_blockTemplate = Buffer.from(response.blob, 'hex');
             result.m_difficulty = response.difficulty;
             result.m_reservedOffset = response.reservedOffset;
             result.m_height = response.height;
-            result.m_block = yield Block_1.Block.from(response.blocktemplate);
+            result.m_block = yield Block_1.Block.from(response.blob);
             return result;
         });
     }

@@ -34,5 +34,5 @@ export declare class HTTPClient {
     protected post(endpoint: string, body?: any): Promise<any>;
     protected put(endpoint: string, body?: any): Promise<any>;
     protected rpcPost(method: string, params?: any): Promise<any>;
-    private url;
+    private fetch;
 }

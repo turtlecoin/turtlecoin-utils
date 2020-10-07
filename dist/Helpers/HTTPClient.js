@@ -84,15 +84,7 @@ class HTTPClient {
     }
     delete(endpoint) {
         return __awaiter(this, void 0, void 0, function* () {
-            const controller = new abort_controller_1.AbortController();
-            const timeout = setTimeout(() => controller.abort(), this.m_timeout);
-            const response = yield node_fetch_1.default(this.url(endpoint), {
-                headers: this.headers,
-                agent: this.agent,
-                method: 'delete',
-                signal: controller.signal
-            });
-            clearTimeout(timeout);
+            const response = yield this.fetch('delete', endpoint);
             if (!response.ok) {
                 if (this.m_errorHandler) {
                     const body = yield response.json();
@@ -106,15 +98,7 @@ class HTTPClient {
     }
     get(endpoint) {
         return __awaiter(this, void 0, void 0, function* () {
-            const controller = new abort_controller_1.AbortController();
-            const timeout = setTimeout(() => controller.abort(), this.m_timeout);
-            const response = yield node_fetch_1.default(this.url(endpoint), {
-                headers: this.headers,
-                agent: this.agent,
-                method: 'get',
-                signal: controller.signal
-            });
-            clearTimeout(timeout);
+            const response = yield this.fetch('get', endpoint);
             const body = yield response.json();
             if (response.ok) {
                 return body;
@@ -131,16 +115,7 @@ class HTTPClient {
     }
     post(endpoint, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            const controller = new abort_controller_1.AbortController();
-            const timeout = setTimeout(() => controller.abort(), this.m_timeout);
-            const response = yield node_fetch_1.default(this.url(endpoint), {
-                headers: this.headers,
-                agent: this.agent,
-                method: 'post',
-                body: JSON.stringify(body || {}),
-                signal: controller.signal
-            });
-            clearTimeout(timeout);
+            const response = yield this.fetch('post', endpoint, body);
             let responseBody;
             try {
                 responseBody = yield response.json();
@@ -161,16 +136,7 @@ class HTTPClient {
     }
     put(endpoint, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            const controller = new abort_controller_1.AbortController();
-            const timeout = setTimeout(() => controller.abort(), this.m_timeout);
-            const response = yield node_fetch_1.default(this.url(endpoint), {
-                headers: this.headers,
-                agent: this.agent,
-                method: 'put',
-                body: JSON.stringify(body || {}),
-                signal: controller.signal
-            });
-            clearTimeout(timeout);
+            const response = yield this.fetch('put', endpoint, body);
             let responseBody;
             try {
                 responseBody = yield response.json();
@@ -203,8 +169,21 @@ class HTTPClient {
             return response.result;
         });
     }
-    url(endpoint) {
-        return util_1.format('%s://%s:%s/%s', this.protocol, this.host, this.port, endpoint);
+    fetch(method, endpoint, body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const controller = new abort_controller_1.AbortController();
+            const url = util_1.format('%s://%s:%s/%s', this.protocol, this.host, this.port, endpoint);
+            const timeout = setTimeout(() => controller.abort(), this.m_timeout);
+            const response = yield node_fetch_1.default(url, {
+                headers: this.headers,
+                agent: this.agent,
+                method: method,
+                body: (body) ? JSON.stringify(body) : undefined,
+                signal: controller.signal
+            });
+            clearTimeout(timeout);
+            return response;
+        });
     }
 }
 exports.HTTPClient = HTTPClient;
