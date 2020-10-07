@@ -4,36 +4,12 @@
 
 import { Block } from './Block';
 import { Transaction } from './Transaction';
-import { BigInteger } from './Types';
+import { BigInteger, TurtleCoindTypes } from './Types';
 
 /** @ignore */
 export enum SIZES {
     KEY = 32,
     CHECKSUM = 4,
-}
-
-declare namespace Interfaces {
-    /**
-     * The daemon block template response
-     */
-    interface DaemonBlockTemplateResponse {
-        /**
-         * The block template supplied by the daemon
-         */
-        blocktemplate: string;
-        /**
-         * The blocktemplate difficulty supplied by the daemon
-         */
-        difficulty: number;
-        /**
-         * The blocktemplate height supplied by the daemon
-         */
-        height: number;
-        /**
-         * The reserved offset position for the blocktemplate supplied by the daemon
-         */
-        reservedOffset: number;
-    }
 }
 
 /**
@@ -149,14 +125,14 @@ export class BlockTemplate {
      * Creates a new block template instance using the supplied daemon response
      * @param response the daemon response to the get_blocktemplate call
      */
-    public static async from (response: Interfaces.DaemonBlockTemplateResponse): Promise<BlockTemplate> {
+    public static async from (response: TurtleCoindTypes.IBlockTemplate): Promise<BlockTemplate> {
         const result = new BlockTemplate();
 
-        result.m_blockTemplate = Buffer.from(response.blocktemplate, 'hex');
+        result.m_blockTemplate = Buffer.from(response.blob, 'hex');
         result.m_difficulty = response.difficulty;
         result.m_reservedOffset = response.reservedOffset;
         result.m_height = response.height;
-        result.m_block = await Block.from(response.blocktemplate);
+        result.m_block = await Block.from(response.blob);
 
         return result;
     }
