@@ -1523,9 +1523,9 @@ describe('Blocks', async function () {
             '181d8e1bafc6af2ab0b0bb01';
 
         it('deserializes and reserializes block template', async () => {
-            const testBlock = await Block.from(BlockTemplateSample.blocktemplate);
+            const testBlock = await Block.from(BlockTemplateSample.blob);
 
-            assert(BlockTemplateSample.blocktemplate === testBlock.toString());
+            assert(BlockTemplateSample.blob === testBlock.toString());
         });
 
         it('deserializes and serializes block', async () => {
