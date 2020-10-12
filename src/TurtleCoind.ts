@@ -272,6 +272,8 @@ export class TurtleCoind extends HTTPClient implements TurtleCoindTypes.ITurtleC
         });
 
         response.blocks = response.blocks.map((block: TurtleCoindTypes.ISyncBlock) => {
+            block.timestamp = new Date(block.timestamp as any);
+
             if (block.coinbaseTX) {
                 block.coinbaseTX.unlockTime = BigInteger(block.coinbaseTX.unlockTime);
             }
