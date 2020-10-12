@@ -3,7 +3,7 @@
 // Please see the included LICENSE file for more information.
 
 import { BigInteger, PortableStorage, StorageType } from '../Types';
-import { Reader, Writer } from 'bytestream-helper';
+import { Reader, Writer } from '@turtlecoin/bytestream';
 import { Block } from '../Block';
 import { Transaction } from '../Transaction';
 

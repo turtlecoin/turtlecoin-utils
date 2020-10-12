@@ -4,7 +4,7 @@
 // Please see the included LICENSE file for more information.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExtraNonceTag = void 0;
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 const Common_1 = require("../Common");
 /** @ignore */
 var SIZES;
@@ -65,7 +65,7 @@ var ExtraNonceTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.varint().toJSNumber() !== NonceTagType.EXTRA_DATA) {
                 throw new Error('Not an extra data field');
             }
@@ -87,7 +87,7 @@ var ExtraNonceTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
             writer.varint(this.data.length);
             writer.write(this.data);
@@ -143,7 +143,7 @@ var ExtraNonceTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.varint().toJSNumber() !== NonceTagType.PAYMENT_ID) {
                 throw new Error('Not a payment ID field');
             }
@@ -158,7 +158,7 @@ var ExtraNonceTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
             writer.hash(this.paymentId);
             return writer.buffer;

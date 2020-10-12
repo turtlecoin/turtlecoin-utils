@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Reader } from 'bytestream-helper';
+import { Reader } from '@turtlecoin/bytestream';
 import { BigInteger } from '../Types';
 /** @ignore */
 declare type PortableStoreValue = BigInteger.BigInteger | Buffer | PortableStorage | PortableStorage[] | string | string[] | boolean;

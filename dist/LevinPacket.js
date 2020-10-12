@@ -13,7 +13,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LevinPacket = exports.LevinProtocol = void 0;
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 const LevinPayloads_1 = require("./Types/LevinPayloads");
 /** @ignore */
 var LevinPayload = LevinPayloads_1.LevinPayloads.LevinPayload;
@@ -133,7 +133,7 @@ class LevinPacket {
         return this.m_signature;
     }
     set signature(value) {
-        const reader = new bytestream_helper_1.Reader(value);
+        const reader = new bytestream_1.Reader(value);
         if (reader.length !== 8) {
             throw new RangeError('Signature is not the correct number of bytes');
         }
@@ -243,7 +243,7 @@ class LevinPacket {
      */
     static from(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.length < 33) {
                 throw new RangeError('Invalid input stream supplied');
             }
@@ -308,7 +308,7 @@ class LevinPacket {
      * @returns the buffer representation of the object
      */
     toBuffer() {
-        const writer = new bytestream_helper_1.Writer();
+        const writer = new bytestream_1.Writer();
         writer.write(Buffer.from(this.signature, 'hex').swap64());
         const payload = this.payload.toBuffer();
         writer.uint64_t(payload.length);

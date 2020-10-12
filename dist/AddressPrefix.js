@@ -4,9 +4,9 @@
 // Please see the included LICENSE file for more information.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AddressPrefix = exports.SIZES = void 0;
-const turtlecoin_base58_1 = require("turtlecoin-base58");
+const base58_1 = require("@turtlecoin/base58");
 const Config_1 = require("./Config");
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 /** @ignore */
 var SIZES;
 (function (SIZES) {
@@ -38,7 +38,7 @@ class AddressPrefix {
         if (this.m_base58) {
             return this.m_base58;
         }
-        return turtlecoin_base58_1.Base58.encode(this.hex);
+        return base58_1.Base58.encode(this.hex);
     }
     /**
      * The decimal encoded address prefix
@@ -56,7 +56,7 @@ class AddressPrefix {
      * The varint encoded address prefix
      */
     get varint() {
-        const writer = new bytestream_helper_1.Writer();
+        const writer = new bytestream_1.Writer();
         writer.varint(this.decimal);
         return writer.buffer;
     }
@@ -72,12 +72,12 @@ class AddressPrefix {
      * @returns the address prefix
      */
     static from(address) {
-        let decodedAddress = turtlecoin_base58_1.Base58.decode(address);
+        let decodedAddress = base58_1.Base58.decode(address);
         /* Chop off the checksum */
         decodedAddress = decodedAddress.slice(0, -(SIZES.CHECKSUM * 2));
         const prefixLength = decodedAddress.length % (SIZES.KEY * 2);
         const prefixDecoded = decodedAddress.slice(0, prefixLength);
-        const reader = new bytestream_helper_1.Reader(prefixDecoded);
+        const reader = new bytestream_1.Reader(prefixDecoded);
         const prefixDecimal = reader.varint().toJSNumber();
         /* This starts a bit of hackery to deal with the block encoding
          * used by Base58 and the fact that the prefix may not be exactly

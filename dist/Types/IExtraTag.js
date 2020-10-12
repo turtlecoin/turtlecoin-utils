@@ -4,7 +4,7 @@
 // Please see the included LICENSE file for more information.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExtraTag = void 0;
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 const Types_1 = require("../Types");
 const Common_1 = require("../Common");
 /** @ignore */
@@ -66,7 +66,7 @@ var ExtraTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.varint().toJSNumber() !== ExtraTagType.PADDING) {
                 throw new Error('Not a padding field');
             }
@@ -77,7 +77,7 @@ var ExtraTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
             for (let i = 0; i < this.size; i++) {
                 writer.varint(this.tag);
@@ -131,7 +131,7 @@ var ExtraTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.varint().toJSNumber() !== ExtraTagType.PUBKEY) {
                 throw new Error('Not a public key field');
             }
@@ -146,7 +146,7 @@ var ExtraTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
             writer.hash(this.publicKey);
             return writer.buffer;
@@ -210,7 +210,7 @@ var ExtraTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.varint().toJSNumber() !== ExtraTagType.MERGED_MINING) {
                 throw new Error('Not a merged mining field');
             }
@@ -242,9 +242,9 @@ var ExtraTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
-            const subWriter = new bytestream_helper_1.Writer();
+            const subWriter = new bytestream_1.Writer();
             subWriter.varint(this.depth);
             subWriter.hash(this.merkleRoot);
             writer.varint(subWriter.length);
@@ -298,7 +298,7 @@ var ExtraTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             const seen = {
                 paymentId: false,
                 data: false
@@ -410,9 +410,9 @@ var ExtraTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
-            const subWriter = new bytestream_helper_1.Writer();
+            const subWriter = new bytestream_1.Writer();
             for (const tag of this.tags) {
                 subWriter.write(tag.toBuffer());
             }
@@ -467,7 +467,7 @@ var ExtraTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.varint().toJSNumber() !== ExtraTagType.TRANSACTION_PRIVATE_KEY) {
                 throw new Error('Not a public key field');
             }
@@ -482,7 +482,7 @@ var ExtraTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
             writer.hash(this.privateKey);
             return writer.buffer;
@@ -535,7 +535,7 @@ var ExtraTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.varint().toJSNumber() !== ExtraTagType.RECIPIENT_PUBLIC_VIEW_KEY) {
                 throw new Error('Not a public key field');
             }
@@ -550,7 +550,7 @@ var ExtraTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
             writer.hash(this.publicKey);
             return writer.buffer;
@@ -603,7 +603,7 @@ var ExtraTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.varint().toJSNumber() !== ExtraTagType.RECIPIENT_PUBLIC_SPEND_KEY) {
                 throw new Error('Not a public key field');
             }
@@ -618,7 +618,7 @@ var ExtraTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
             writer.hash(this.publicKey);
             return writer.buffer;
@@ -670,7 +670,7 @@ var ExtraTag;
          * @returns the new object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.varint().toJSNumber() !== ExtraTagType.POOL_NONCE) {
                 throw new Error('Not an extra data field');
             }
@@ -692,7 +692,7 @@ var ExtraTag;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.tag);
             writer.varint(this.data.length);
             writer.write(this.data);

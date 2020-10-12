@@ -3,7 +3,7 @@
 // Please see the included LICENSE file for more information.
 
 import Transport from '@ledgerhq/hw-transport';
-import { Reader, Writer } from 'bytestream-helper';
+import { Reader, Writer } from '@turtlecoin/bytestream';
 import { EventEmitter } from 'events';
 import { Address, KeyPair, Keys, Transaction } from './';
 import { LedgerTypes } from './Types/Ledger';

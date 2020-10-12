@@ -2,9 +2,9 @@
 //
 // Please see the included LICENSE file for more information.
 
-import { Base58 } from 'turtlecoin-base58';
+import { Base58 } from '@turtlecoin/base58';
 import { Config } from './Config';
-import { Reader, Writer } from 'bytestream-helper';
+import { Reader, Writer } from '@turtlecoin/bytestream';
 
 /** @ignore */
 export enum SIZES {

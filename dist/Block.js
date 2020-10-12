@@ -17,7 +17,7 @@ const Config_1 = require("./Config");
 const Transaction_1 = require("./Transaction");
 const ParentBlock_1 = require("./ParentBlock");
 const Types_1 = require("./Types");
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 const Common_1 = require("./Common");
 /**
  * Represents a TurtleCoin Block
@@ -61,18 +61,18 @@ class Block {
      * The nonce of the block
      */
     get nonce() {
-        const writer = new bytestream_helper_1.Writer();
+        const writer = new bytestream_1.Writer();
         writer.uint32_t(this.m_nonce, true);
-        const reader = new bytestream_helper_1.Reader(writer.buffer);
+        const reader = new bytestream_1.Reader(writer.buffer);
         return reader.uint32_t().toJSNumber();
     }
     set nonce(value) {
         if (value > 0xFFFFFFFF) {
             throw new Error('value exceeds uint32_t maximum');
         }
-        const writer = new bytestream_helper_1.Writer();
+        const writer = new bytestream_1.Writer();
         writer.uint32_t(value);
-        const reader = new bytestream_helper_1.Reader(writer.buffer);
+        const reader = new bytestream_1.Reader(writer.buffer);
         this.m_nonce = reader.uint32_t(true).toJSNumber();
     }
     /**
@@ -105,7 +105,7 @@ class Block {
      */
     merkleRoot() {
         return __awaiter(this, void 0, void 0, function* () {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.m_majorVersion);
             writer.varint(this.m_minorVersion);
             if (this.m_majorVersion < this.m_config.activateParentBlockVersion) {
@@ -224,7 +224,7 @@ class Block {
             if (config) {
                 block.m_config = Common_1.Common.mergeConfig(config);
             }
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             block.m_majorVersion = reader.varint().toJSNumber();
             block.m_minorVersion = reader.varint().toJSNumber();
             if (block.m_majorVersion >= block.m_config.activateParentBlockVersion) {
@@ -320,7 +320,7 @@ class Block {
      * @returns the resulting Buffer
      */
     toBuffer() {
-        const writer = new bytestream_helper_1.Writer();
+        const writer = new bytestream_1.Writer();
         writer.varint(this.m_majorVersion);
         writer.varint(this.m_minorVersion);
         if (this.m_majorVersion >= this.m_config.activateParentBlockVersion) {
@@ -375,7 +375,7 @@ class Block {
      */
     toHashingBuffer(headerOnly = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.m_majorVersion);
             writer.varint(this.m_minorVersion);
             if (this.m_majorVersion >= this.m_config.activateParentBlockVersion) {
@@ -434,7 +434,7 @@ exports.Block = Block;
 /** @ignore */
 function getBlockHash(data) {
     return __awaiter(this, void 0, void 0, function* () {
-        const writer = new bytestream_helper_1.Writer();
+        const writer = new bytestream_1.Writer();
         writer.varint(data.length);
         writer.write(data);
         return Types_1.TurtleCoinCrypto.cn_fast_hash(writer.blob);

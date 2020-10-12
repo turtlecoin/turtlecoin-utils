@@ -14,12 +14,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Address = exports.SIZES = void 0;
 const AddressPrefix_1 = require("./AddressPrefix");
-const turtlecoin_base58_1 = require("turtlecoin-base58");
+const base58_1 = require("@turtlecoin/base58");
 const Common_1 = require("./Common");
 const Config_1 = require("./Config");
 const Types_1 = require("./Types");
-const turtlecoin_mnemonics_1 = require("turtlecoin-mnemonics");
-const bytestream_helper_1 = require("bytestream-helper");
+const mnemonics_1 = require("@turtlecoin/mnemonics");
+const bytestream_1 = require("@turtlecoin/bytestream");
 /** @ignore */
 var SIZES;
 (function (SIZES) {
@@ -61,7 +61,7 @@ class Address {
      * The mnemonic phrase for the address if available
      */
     get mnemonic() {
-        return (this.m_seed) ? turtlecoin_mnemonics_1.Mnemonics.encode(this.m_seed) : undefined;
+        return (this.m_seed) ? mnemonics_1.Mnemonics.encode(this.m_seed) : undefined;
     }
     /**
      * The payment Id of the address if one exists
@@ -116,8 +116,8 @@ class Address {
             else if (typeof prefix === 'undefined') {
                 prefix = new AddressPrefix_1.AddressPrefix();
             }
-            const decodedAddress = turtlecoin_base58_1.Base58.decode(address);
-            const reader = new bytestream_helper_1.Reader(decodedAddress);
+            const decodedAddress = base58_1.Base58.decode(address);
+            const reader = new bytestream_1.Reader(decodedAddress);
             const decodedPrefix = reader.bytes(prefix.size).toString('hex');
             if (decodedPrefix !== prefix.hex) {
                 throw new Error('Invalid address prefix');
@@ -129,7 +129,7 @@ class Address {
             const publicSpend = reader.hash();
             const publicView = reader.hash();
             const expectedChecksum = reader.bytes(SIZES.CHECKSUM).toString('hex');
-            const checksum = (new bytestream_helper_1.Reader(yield Types_1.TurtleCoinCrypto.cn_fast_hash(decodedPrefix + paymentId + publicSpend + publicView))).bytes(SIZES.CHECKSUM).toString('hex');
+            const checksum = (new bytestream_1.Reader(yield Types_1.TurtleCoinCrypto.cn_fast_hash(decodedPrefix + paymentId + publicSpend + publicView))).bytes(SIZES.CHECKSUM).toString('hex');
             if (expectedChecksum !== checksum) {
                 throw new Error('Could not parse address: checksum mismatch');
             }
@@ -220,7 +220,7 @@ class Address {
      */
     static fromMnemonic(mnemonic, language, prefix) {
         return __awaiter(this, void 0, void 0, function* () {
-            const seed = turtlecoin_mnemonics_1.Mnemonics.decode(mnemonic);
+            const seed = mnemonics_1.Mnemonics.decode(mnemonic);
             return Address.fromSeed(seed, language, prefix);
         });
     }
@@ -311,7 +311,7 @@ class Address {
      * @retursn the Base58 representation of the address
      */
     static encodeRaw(rawAddress) {
-        return turtlecoin_base58_1.Base58.encode(rawAddress);
+        return base58_1.Base58.encode(rawAddress);
     }
     /**
      * Returns the Base58 encoded address
@@ -319,7 +319,7 @@ class Address {
      */
     toString() {
         return __awaiter(this, void 0, void 0, function* () {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hex(this.prefix.hex);
             if (this.m_paymentId) {
                 writer.hex(this.m_paymentId);
@@ -327,14 +327,14 @@ class Address {
             writer.hash(this.m_keys.spend.publicKey);
             writer.hash(this.m_keys.view.publicKey);
             if (this.m_cached.addressPrefix === writer.blob && this.m_cached.address.length !== 0) {
-                return turtlecoin_base58_1.Base58.encode(this.m_cached.address);
+                return base58_1.Base58.encode(this.m_cached.address);
             }
             const checksum = (yield Types_1.TurtleCoinCrypto.cn_fast_hash(writer.blob))
                 .slice(0, 8);
             this.m_cached.addressPrefix = writer.blob;
             writer.hex(checksum);
             this.m_cached.address = writer.blob;
-            return turtlecoin_base58_1.Base58.encode(writer.blob);
+            return base58_1.Base58.encode(writer.blob);
         });
     }
 }

@@ -4,7 +4,7 @@
 // Please see the included LICENSE file for more information.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PortableStorage = exports.StorageType = void 0;
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 const Types_1 = require("../Types");
 /** @ignore */
 var StorageType;
@@ -42,7 +42,7 @@ class PortableStorage {
         this.m_version = value;
     }
     static from(data, skipHeader = false) {
-        const reader = new bytestream_helper_1.Reader(data);
+        const reader = new bytestream_1.Reader(data);
         const result = new PortableStorage();
         if (reader.unreadBytes === 0) {
             return result;
@@ -89,7 +89,7 @@ class PortableStorage {
         return false;
     }
     toBuffer(skipHeader = false) {
-        const writer = new bytestream_helper_1.Writer();
+        const writer = new bytestream_1.Writer();
         if (!skipHeader) {
             writer.uint32_t(this.m_signatureA);
             writer.uint32_t(this.m_signatureB);
@@ -175,7 +175,7 @@ function blobToEntries(reader) {
 }
 /** @ignore */
 function entriesToBuffer(entries) {
-    const writer = new bytestream_helper_1.Writer();
+    const writer = new bytestream_1.Writer();
     writer.varint(entries.length, true);
     for (const entry of entries) {
         const keyName = Buffer.from(entry.name);

@@ -17,8 +17,8 @@ const Address_1 = require("./Address");
 const AddressPrefix_1 = require("./AddressPrefix");
 const Types_1 = require("./Types");
 const aes_js_1 = require("aes-js");
-const bytestream_helper_1 = require("bytestream-helper");
-const turtlecoin_base58_1 = require("turtlecoin-base58");
+const bytestream_1 = require("@turtlecoin/bytestream");
+const base58_1 = require("@turtlecoin/base58");
 /** @ignore */
 const messagePrefix = 0xde0aec198;
 /**
@@ -134,11 +134,11 @@ class MultisigMessage {
                 throw new Error('Cannot attempt decryption without private spend key');
             }
             const prefix = new AddressPrefix_1.AddressPrefix(messagePrefix);
-            const decoded = turtlecoin_base58_1.Base58.decode(base58);
+            const decoded = base58_1.Base58.decode(base58);
             const signature = decoded.slice(-128);
             const rawData = decoded.slice(0, decoded.length - 128);
             const hash = yield Types_1.TurtleCoinCrypto.cn_fast_hash(rawData);
-            const reader = new bytestream_helper_1.Reader(rawData);
+            const reader = new bytestream_1.Reader(rawData);
             const foundPrefix = reader.hex(prefix.varint.length);
             if (foundPrefix !== prefix.hex) {
                 throw new Error('Invalid data supplied');
@@ -227,18 +227,18 @@ class MultisigMessage {
                 payload.preparedTransactions = this.preparedTransactions;
             }
             const prefix = new AddressPrefix_1.AddressPrefix(messagePrefix);
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hex(prefix.hex);
             writer.varint(this.nonce);
             const transfer = yield encrypt(this.source, this.destination, payload, this.nonce);
-            const subWriter = new bytestream_helper_1.Writer();
+            const subWriter = new bytestream_1.Writer();
             subWriter.write(transfer);
             writer.varint(subWriter.length);
             writer.write(subWriter.buffer);
             const hash = yield Types_1.TurtleCoinCrypto.cn_fast_hash(writer.blob);
             const sig = yield Types_1.TurtleCoinCrypto.generateSignature(hash, this.source.spend.publicKey, this.source.spend.privateKey);
             writer.hex(sig);
-            return turtlecoin_base58_1.Base58.encode(writer.blob);
+            return base58_1.Base58.encode(writer.blob);
         });
     }
 }

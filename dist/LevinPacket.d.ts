@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Reader } from 'bytestream-helper';
+import { Reader } from '@turtlecoin/bytestream';
 import { LevinPayloads } from './Types/LevinPayloads';
 /** @ignore */
 import ILevinPayload = LevinPayloads.ILevinPayload;

@@ -16,7 +16,7 @@ exports.Transaction = void 0;
 const Common_1 = require("./Common");
 const Address_1 = require("./Address");
 const Types_1 = require("./Types");
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 /** @ignore */
 const TransactionVersion2Suffix = 'bc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a' +
     '0000000000000000000000000000000000000000000000000000000000000000';
@@ -85,7 +85,7 @@ class Transaction {
             if (!this.recipientPublicViewKey || !this.recipientPublicSpendKey) {
                 return;
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(this.recipientPublicSpendKey);
             writer.hash(this.recipientPublicViewKey);
             return Types_1.TurtleCoinCrypto.cn_fast_hash(writer.blob);
@@ -369,7 +369,7 @@ class Transaction {
     static from(data) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = new Transaction();
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             result.m_readonly = true;
             result.version = reader.varint().toJSNumber();
             result.unlockTime = reader.varint();
@@ -547,7 +547,7 @@ class Transaction {
      * @returns the buffer representation
      */
     toBuffer(headerOnly = false) {
-        const writer = new bytestream_helper_1.Writer();
+        const writer = new bytestream_1.Writer();
         writer.varint(this.version);
         writer.varint(this.unlockTime);
         writer.varint(this.inputs.length);
@@ -612,7 +612,7 @@ function readExtra(data) {
         recipientPublicSpendKey: false,
         poolNonce: false
     };
-    const reader = new bytestream_helper_1.Reader(data);
+    const reader = new bytestream_1.Reader(data);
     while (reader.unreadBytes > 0) {
         let tag = 0;
         try {
@@ -655,7 +655,7 @@ function readExtra(data) {
                 break;
             case Types_1.ExtraTag.ExtraTagType.NONCE:
                 if (!seen.nonce && reader.unreadBytes >= 1) {
-                    const tmpReader = new bytestream_helper_1.Reader(reader.unreadBuffer);
+                    const tmpReader = new bytestream_1.Reader(reader.unreadBuffer);
                     tmpReader.skip(totalLength);
                     let nonceLength = 0;
                     try {
@@ -684,7 +684,7 @@ function readExtra(data) {
                 break;
             case Types_1.ExtraTag.ExtraTagType.MERGED_MINING:
                 if (!seen.mergedMining && reader.unreadBytes >= 1) {
-                    const tmpReader = new bytestream_helper_1.Reader(reader.unreadBuffer);
+                    const tmpReader = new bytestream_1.Reader(reader.unreadBuffer);
                     tmpReader.skip(totalLength);
                     let mmLength = 0;
                     try {
@@ -758,7 +758,7 @@ function readExtra(data) {
                 break;
             case Types_1.ExtraTag.ExtraTagType.POOL_NONCE:
                 if (!seen.poolNonce) {
-                    const tmpReader = new bytestream_helper_1.Reader(reader.unreadBuffer);
+                    const tmpReader = new bytestream_1.Reader(reader.unreadBuffer);
                     tmpReader.skip(totalLength);
                     let nonceLength = 0;
                     try {
@@ -794,7 +794,7 @@ function readExtra(data) {
 }
 /** @ignore */
 function writeExtra(tags) {
-    const writer = new bytestream_helper_1.Writer();
+    const writer = new bytestream_1.Writer();
     for (const tag of tags) {
         writer.write(tag.toBuffer());
     }

@@ -5,7 +5,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionOutputs = void 0;
 const Types_1 = require("../Types");
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 var TransactionOutputs;
 (function (TransactionOutputs) {
     /**
@@ -63,7 +63,7 @@ var TransactionOutputs;
          * @returns the Buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.varint(this.amount);
             writer.uint8_t(this.type);
             writer.hash(this.key);

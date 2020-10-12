@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LedgerDevice = exports.LedgerTransport = void 0;
 const hw_transport_1 = require("@ledgerhq/hw-transport");
 exports.LedgerTransport = hw_transport_1.default;
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 const events_1 = require("events");
 const _1 = require("./");
 const Ledger_1 = require("./Types/Ledger");
@@ -122,7 +122,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex64(key)) {
                 throw new Error('Malformed key supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(key);
             const result = yield this.exchange(Ledger_1.LedgerTypes.Command.CHECK_KEY, undefined, writer.buffer);
             return (result.uint8_t().toJSNumber() === 1);
@@ -137,7 +137,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex64(scalar)) {
                 throw new Error('Malformed key supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(scalar);
             const result = yield this.exchange(Ledger_1.LedgerTypes.Command.CHECK_SCALAR, undefined, writer.buffer);
             return (result.uint8_t().toJSNumber() === 1);
@@ -203,7 +203,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex64(private_key)) {
                 throw new Error('Malformed private_key supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(private_key);
             const result = yield this.exchange(Ledger_1.LedgerTypes.Command.PRIVATE_TO_PUBLIC, undefined, writer.buffer);
             return _1.KeyPair.from(result.hash());
@@ -248,7 +248,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex64(output_key)) {
                 throw new Error('Malformed output_key supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(tx_public_key);
             writer.uint32_t(output_index, true);
             writer.hash(output_key);
@@ -275,7 +275,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex64(output_key)) {
                 throw new Error('Malformed output_key supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(derivation);
             writer.uint32_t(output_index, true);
             writer.hash(output_key);
@@ -310,7 +310,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex128(signature)) {
                 throw new Error('Malformed signature supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(tx_public_key);
             writer.uint32_t(output_index, true);
             writer.hash(output_key);
@@ -358,7 +358,7 @@ class LedgerDevice extends events_1.EventEmitter {
                 }
             }
             const signatures = [];
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(tx_public_key);
             writer.uint32_t(output_index, true);
             writer.hash(output_key);
@@ -392,7 +392,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex64(message_digest)) {
                 throw new Error('Malformed message_digest supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(message_digest);
             const result = yield this.exchange(Ledger_1.LedgerTypes.Command.GENERATE_SIGNATURE, confirm, writer.buffer);
             if (result.length !== 64) {
@@ -413,7 +413,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex64(tx_public_key)) {
                 throw new Error('Malformed tx_public_key supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(tx_public_key);
             const result = yield this.exchange(Ledger_1.LedgerTypes.Command.GENERATE_KEY_DERIVATION, confirm, writer.buffer);
             return result.hash();
@@ -434,7 +434,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (output_index < 0) {
                 throw new Error('output_index must be >= 0');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(derivation);
             writer.uint32_t(output_index, true);
             const result = yield this.exchange(Ledger_1.LedgerTypes.Command.DERIVE_PUBLIC_KEY, confirm, writer.buffer);
@@ -456,7 +456,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (output_index < 0) {
                 throw new Error('output_index must be >= 0');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(derivation);
             writer.uint32_t(output_index, true);
             const result = yield this.exchange(Ledger_1.LedgerTypes.Command.DERIVE_SECRET_KEY, confirm, writer.buffer);
@@ -480,7 +480,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex128(signature)) {
                 throw new Error('Malformed signature supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(message_digest);
             writer.hash(public_key);
             writer.hex(signature);
@@ -523,7 +523,7 @@ class LedgerDevice extends events_1.EventEmitter {
                     throw new Error('Malformed signature supplied');
                 }
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(tx_prefix_hash);
             writer.hash(key_image);
             for (const key of public_keys) {
@@ -587,7 +587,7 @@ class LedgerDevice extends events_1.EventEmitter {
                     throw new Error('Malformed payment_id supplied');
                 }
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.uint64_t(unlock_time, true);
             writer.uint8_t(input_count);
             writer.uint8_t(output_count);
@@ -649,7 +649,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (real_output_index > 3 || real_output_index < 0) {
                 throw new RangeError('real_output_index out of range');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.hash(input_tx_public_key);
             writer.uint8_t(input_output_index);
             writer.uint64_t(amount, true);
@@ -684,7 +684,7 @@ class LedgerDevice extends events_1.EventEmitter {
             if (!isHex64(output_key)) {
                 throw new Error('Malformed output_key supplied');
             }
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.uint64_t(amount, true);
             writer.hash(output_key);
             yield this.exchange(Ledger_1.LedgerTypes.Command.TX_LOAD_OUTPUT, undefined, writer.buffer);
@@ -715,9 +715,9 @@ class LedgerDevice extends events_1.EventEmitter {
      */
     retrieveTransaction() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = new bytestream_helper_1.Writer();
+            const response = new bytestream_1.Writer();
             while (response.length < this.m_config.maximumLedgerTransactionSize) {
-                const writer = new bytestream_helper_1.Writer();
+                const writer = new bytestream_1.Writer();
                 writer.uint16_t(response.length, true);
                 const result = yield this.exchange(Ledger_1.LedgerTypes.Command.TX_DUMP, undefined, writer.buffer);
                 // if we didn't receive any more data, then break out of the loop
@@ -738,7 +738,7 @@ class LedgerDevice extends events_1.EventEmitter {
      */
     exchange(command, confirm = true, data) {
         return __awaiter(this, void 0, void 0, function* () {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.uint8_t(Ledger_1.LedgerTypes.APDU.INS);
             writer.uint8_t(command);
             if (confirm) {
@@ -760,10 +760,10 @@ class LedgerDevice extends events_1.EventEmitter {
             }
             this.emit('send', writer.blob);
             const result = yield this.m_transport.exchange(writer.buffer);
-            this.emit('receive', (new bytestream_helper_1.Reader(result)).unreadBuffer.toString('hex'));
+            this.emit('receive', (new bytestream_1.Reader(result)).unreadBuffer.toString('hex'));
             const code = result.slice(result.length - 2);
-            const response = new bytestream_helper_1.Reader(result.slice(0, result.length - code.length));
-            const reader = new bytestream_helper_1.Reader(code);
+            const response = new bytestream_1.Reader(result.slice(0, result.length - code.length));
+            const reader = new bytestream_1.Reader(code);
             let errCode = reader.uint16_t(true).toJSNumber();
             if (errCode !== Ledger_1.LedgerTypes.ErrorCode.OK) {
                 if (response.length >= 2) {

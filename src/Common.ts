@@ -2,7 +2,7 @@
 //
 // Please see the included LICENSE file for more information.
 
-import { Writer } from 'bytestream-helper';
+import { Writer } from '@turtlecoin/bytestream';
 import { BigInteger } from './Types';
 import { Config, ICoinConfig, ICoinRunningConfig } from './Config';
 

@@ -4,7 +4,7 @@
 // Please see the included LICENSE file for more information.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Common = void 0;
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 const Types_1 = require("./Types");
 const Config_1 = require("./Config");
 /** @ignore */
@@ -76,7 +76,7 @@ class Common {
         if (typeof value === 'number') {
             value = Types_1.BigInteger(value);
         }
-        const writer = new bytestream_helper_1.Writer();
+        const writer = new bytestream_1.Writer();
         writer.varint(value);
         return writer.length;
     }

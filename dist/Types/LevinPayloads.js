@@ -14,7 +14,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ip2int = exports.int2ip = exports.LevinPayloads = exports.SIZES = void 0;
 const Types_1 = require("../Types");
-const bytestream_helper_1 = require("bytestream-helper");
+const bytestream_1 = require("@turtlecoin/bytestream");
 const Block_1 = require("../Block");
 const Transaction_1 = require("../Transaction");
 /** @ignore */
@@ -71,7 +71,7 @@ var LevinPayloads;
             this.m_last_seen = new Date();
             this.m_ip = ip2int(ip);
             this.m_port = port;
-            const reader = new bytestream_helper_1.Reader(id);
+            const reader = new bytestream_1.Reader(id);
             if (reader.length !== 8) {
                 throw new RangeError('Invalid id supplied');
             }
@@ -103,7 +103,7 @@ var LevinPayloads;
             return this.m_id;
         }
         set id(value) {
-            const reader = new bytestream_helper_1.Reader(value);
+            const reader = new bytestream_1.Reader(value);
             if (reader.length !== 8) {
                 throw new RangeError('Invalid id supplied');
             }
@@ -124,7 +124,7 @@ var LevinPayloads;
          * @returns a new instance of the object
          */
         static from(data) {
-            const reader = new bytestream_helper_1.Reader(data);
+            const reader = new bytestream_1.Reader(data);
             if (reader.length !== 24) {
                 throw new RangeError('Invalid data length');
             }
@@ -139,7 +139,7 @@ var LevinPayloads;
          * @returns the buffer representation of the object
          */
         toBuffer() {
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.uint32_t(this.m_ip);
             writer.uint32_t(this.m_port);
             writer.hex(this.m_id);
@@ -192,7 +192,7 @@ var LevinPayloads;
             return this.m_network_id;
         }
         set network_id(value) {
-            const reader = new bytestream_helper_1.Reader(value);
+            const reader = new bytestream_1.Reader(value);
             if (reader.length !== 16) {
                 throw new Error('Invalid network id length');
             }
@@ -232,7 +232,7 @@ var LevinPayloads;
             return this.m_peer_id;
         }
         set peer_id(value) {
-            const reader = new bytestream_helper_1.Reader(value);
+            const reader = new bytestream_1.Reader(value);
             if (reader.length !== 8) {
                 throw new Error('Invalid peer id length');
             }
@@ -254,7 +254,7 @@ var LevinPayloads;
             return this.m_top_id;
         }
         set top_id(value) {
-            const reader = new bytestream_helper_1.Reader(value);
+            const reader = new bytestream_1.Reader(value);
             if (reader.length !== SIZES.KEY) {
                 throw new Error('Invalid top id length');
             }
@@ -284,7 +284,7 @@ var LevinPayloads;
             const lt = payload.get('node_data').get('local_time')
                 .toString(16)
                 .padStart(16, '0');
-            result.local_time = (new bytestream_helper_1.Reader(lt)).time_t(true);
+            result.local_time = (new bytestream_1.Reader(lt)).time_t(true);
             result.my_port =
                 payload.get('node_data').get('my_port')
                     .toJSNumber();
@@ -297,7 +297,7 @@ var LevinPayloads;
             result.top_id = payload.get('payload_data').get('top_id');
             if (payload.exists('local_peerlist')) {
                 const peerlist = (payload.get('local_peerlist'));
-                const reader = new bytestream_helper_1.Reader(peerlist);
+                const reader = new bytestream_1.Reader(peerlist);
                 if (reader.length % 24 !== 0) {
                     throw new Error('Error parsing local_peer list');
                 }
@@ -316,7 +316,7 @@ var LevinPayloads;
             node_data.set('network_id', this.network_id, Types_1.StorageType.STRING);
             node_data.set('version', Types_1.BigInteger(this.version), Types_1.StorageType.UINT8);
             node_data.set('peer_id', Types_1.BigInteger(this.peer_id, 16), Types_1.StorageType.UINT64);
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             writer.time_t(this.local_time, true);
             node_data.set('local_time', Types_1.BigInteger(writer.blob, 16), Types_1.StorageType.UINT64);
             node_data.set('my_port', Types_1.BigInteger(this.my_port), Types_1.StorageType.UINT32);
@@ -326,7 +326,7 @@ var LevinPayloads;
             const payload = new Types_1.PortableStorage();
             payload.set('node_data', node_data, Types_1.StorageType.OBJECT);
             payload.set('payload_data', payload_data, Types_1.StorageType.OBJECT);
-            const peerList = new bytestream_helper_1.Writer();
+            const peerList = new bytestream_1.Writer();
             this.local_peerlist.forEach((peer) => peerList.write(peer.toBuffer()));
             if (peerList.length !== 0) {
                 payload.set('local_peerlist', peerList.buffer.toString('hex'), Types_1.StorageType.STRING);
@@ -433,7 +433,7 @@ var LevinPayloads;
             return this.m_blockHash;
         }
         set blockHash(value) {
-            const reader = new bytestream_helper_1.Reader(value);
+            const reader = new bytestream_1.Reader(value);
             if (reader.length !== SIZES.KEY) {
                 throw new Error('Invalid hash supplied');
             }
@@ -448,7 +448,7 @@ var LevinPayloads;
         set missing_txs(value) {
             const tmp = [];
             value.forEach((v) => {
-                const reader = new bytestream_helper_1.Reader(v);
+                const reader = new bytestream_1.Reader(v);
                 if (v.length !== SIZES.KEY) {
                     throw new Error('Invalid hash supplied');
                 }
@@ -468,7 +468,7 @@ var LevinPayloads;
                 payload.get('current_blockchain_height').toJSNumber();
             result.blockHash = payload.get('blockHash');
             if (payload.exists('missing_txs')) {
-                const reader = new bytestream_helper_1.Reader(payload.get('missing_txs'));
+                const reader = new bytestream_1.Reader(payload.get('missing_txs'));
                 if (reader.length % SIZES.KEY) {
                     throw new RangeError('Invalid missing_tx data');
                 }
@@ -486,7 +486,7 @@ var LevinPayloads;
             const payload = new Types_1.PortableStorage();
             payload.set('current_blockchain_height', Types_1.BigInteger(this.current_blockchain_height), Types_1.StorageType.UINT32);
             payload.set('blockHash', this.blockHash, Types_1.StorageType.STRING);
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             this.missing_txs.forEach((tx) => writer.hash(tx));
             payload.set('missing_txs', writer.buffer.toString('hex'), Types_1.StorageType.STRING);
             return payload.toBuffer();
@@ -668,7 +668,7 @@ var LevinPayloads;
             return this.m_peer_id;
         }
         set peer_id(value) {
-            const reader = new bytestream_helper_1.Reader(value);
+            const reader = new bytestream_1.Reader(value);
             if (reader.length !== 8) {
                 throw new Error('Invalid peer id length');
             }
@@ -727,7 +727,7 @@ var LevinPayloads;
         set block_ids(value) {
             const tmp = [];
             value.forEach((v) => {
-                const reader = new bytestream_helper_1.Reader(v);
+                const reader = new bytestream_1.Reader(v);
                 if (v.length !== SIZES.KEY) {
                     throw new Error('Invalid hash supplied');
                 }
@@ -744,7 +744,7 @@ var LevinPayloads;
             const payload = Types_1.PortableStorage.from(data);
             const result = new RequestChain();
             if (payload.exists('block_ids')) {
-                const reader = new bytestream_helper_1.Reader(payload.get('block_ids'));
+                const reader = new bytestream_1.Reader(payload.get('block_ids'));
                 if (reader.length % 32 !== 0) {
                     throw new Error('Error parsing block ids');
                 }
@@ -760,7 +760,7 @@ var LevinPayloads;
          */
         toBuffer() {
             const payload = new Types_1.PortableStorage();
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             this.block_ids.forEach((hash) => writer.hash(hash));
             payload.set('block_ids', writer.buffer.toString('hex'), Types_1.StorageType.STRING);
             return payload.toBuffer();
@@ -788,7 +788,7 @@ var LevinPayloads;
         set blocks(value) {
             const tmp = [];
             value.forEach((v) => {
-                const reader = new bytestream_helper_1.Reader(v);
+                const reader = new bytestream_1.Reader(v);
                 if (v.length !== SIZES.KEY) {
                     throw new Error('Invalid hash supplied');
                 }
@@ -805,7 +805,7 @@ var LevinPayloads;
         set transactions(value) {
             const tmp = [];
             value.forEach((v) => {
-                const reader = new bytestream_helper_1.Reader(v);
+                const reader = new bytestream_1.Reader(v);
                 if (v.length !== SIZES.KEY) {
                     throw new Error('Invalid hash supplied');
                 }
@@ -822,7 +822,7 @@ var LevinPayloads;
             const payload = Types_1.PortableStorage.from(data);
             const result = new RequestGetObjects();
             if (payload.exists('blocks')) {
-                const reader = new bytestream_helper_1.Reader(payload.get('blocks'));
+                const reader = new bytestream_1.Reader(payload.get('blocks'));
                 if (reader.length % 32 !== 0) {
                     throw new Error('Error parsing txs');
                 }
@@ -831,7 +831,7 @@ var LevinPayloads;
                 }
             }
             if (payload.exists('txs')) {
-                const reader = new bytestream_helper_1.Reader(payload.get('txs'));
+                const reader = new bytestream_1.Reader(payload.get('txs'));
                 if (reader.length % 32 !== 0) {
                     throw new Error('Error parsing txs');
                 }
@@ -847,7 +847,7 @@ var LevinPayloads;
          */
         toBuffer() {
             const payload = new Types_1.PortableStorage();
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             if (this.transactions.length !== 0) {
                 this.transactions.forEach((tx) => writer.hash(tx));
                 payload.set('txs', writer.buffer.toString('hex'), Types_1.StorageType.STRING);
@@ -880,7 +880,7 @@ var LevinPayloads;
         set transactions(value) {
             const tmp = [];
             value.forEach((v) => {
-                const reader = new bytestream_helper_1.Reader(v);
+                const reader = new bytestream_1.Reader(v);
                 if (v.length !== SIZES.KEY) {
                     throw new Error('Invalid hash supplied');
                 }
@@ -897,7 +897,7 @@ var LevinPayloads;
             const payload = Types_1.PortableStorage.from(data);
             const result = new RequestTXPool();
             if (payload.exists('txs')) {
-                const reader = new bytestream_helper_1.Reader(payload.get('txs'));
+                const reader = new bytestream_1.Reader(payload.get('txs'));
                 if (reader.length % 32 !== 0) {
                     throw new Error('Error parsing txs');
                 }
@@ -913,7 +913,7 @@ var LevinPayloads;
          */
         toBuffer() {
             const payload = new Types_1.PortableStorage();
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             this.transactions.forEach((tx) => writer.hash(tx));
             payload.set('txs', writer.buffer.toString('hex'), Types_1.StorageType.STRING);
             return payload.toBuffer();
@@ -942,7 +942,7 @@ var LevinPayloads;
         set block_ids(value) {
             const tmp = [];
             value.forEach((v) => {
-                const reader = new bytestream_helper_1.Reader(v);
+                const reader = new bytestream_1.Reader(v);
                 if (v.length !== SIZES.KEY) {
                     throw new Error('Invalid hash supplied');
                 }
@@ -981,7 +981,7 @@ var LevinPayloads;
             result.total_height = payload.get('total_height')
                 .toJSNumber();
             if (payload.exists('m_block_ids')) {
-                const reader = new bytestream_helper_1.Reader(payload.get('m_block_ids'));
+                const reader = new bytestream_1.Reader(payload.get('m_block_ids'));
                 if (reader.length % 32 !== 0) {
                     throw new Error('Error parsing block ids');
                 }
@@ -999,7 +999,7 @@ var LevinPayloads;
             const payload = new Types_1.PortableStorage();
             payload.set('start_height', Types_1.BigInteger(this.start_height), Types_1.StorageType.UINT32);
             payload.set('total_height', Types_1.BigInteger(this.total_height), Types_1.StorageType.UINT32);
-            const writer = new bytestream_helper_1.Writer();
+            const writer = new bytestream_1.Writer();
             this.block_ids.forEach((hash) => writer.hash(hash));
             payload.set('m_block_ids', writer.buffer.toString('hex'), Types_1.StorageType.STRING);
             return payload.toBuffer();
@@ -1083,7 +1083,7 @@ var LevinPayloads;
                     }
                 }
                 if (payload.exists('missed_ids')) {
-                    const reader = new bytestream_helper_1.Reader(payload.get('missed_ids'));
+                    const reader = new bytestream_1.Reader(payload.get('missed_ids'));
                     if (reader.length % 32 !== 0) {
                         throw new Error('Cannot parsed missed_ids');
                     }
@@ -1124,7 +1124,7 @@ var LevinPayloads;
                 payload.set('blocks', blocks, Types_1.StorageType.OBJECT_ARRAY);
             }
             if (this.missed_ids.length !== 0) {
-                const writer = new bytestream_helper_1.Writer();
+                const writer = new bytestream_1.Writer();
                 this.missed_ids.forEach((id) => writer.hash(id));
                 payload.set('missed_ids', writer.buffer.toString('hex'), Types_1.StorageType.STRING);
             }
@@ -1172,7 +1172,7 @@ var LevinPayloads;
             return this.m_top_id;
         }
         set top_id(value) {
-            const reader = new bytestream_helper_1.Reader(value);
+            const reader = new bytestream_1.Reader(value);
             if (reader.length !== SIZES.KEY) {
                 throw new Error('Invalid top id length');
             }
@@ -1199,7 +1199,7 @@ var LevinPayloads;
                 const lt = payload.get('local_time')
                     .toString(16)
                     .padStart(16, '0');
-                result.local_time = (new bytestream_helper_1.Reader(lt)).time_t(true);
+                result.local_time = (new bytestream_1.Reader(lt)).time_t(true);
             }
             result.current_height =
                 payload.get('payload_data').get('current_height')
@@ -1207,7 +1207,7 @@ var LevinPayloads;
             result.top_id = payload.get('payload_data').get('top_id');
             if (payload.exists('local_peerlist')) {
                 const peerlist = (payload.get('local_peerlist'));
-                const reader = new bytestream_helper_1.Reader(peerlist);
+                const reader = new bytestream_1.Reader(peerlist);
                 if (reader.length % 24 !== 0) {
                     throw new Error('Error parsing local_peer list');
                 }
@@ -1224,7 +1224,7 @@ var LevinPayloads;
         toBuffer() {
             const payload = new Types_1.PortableStorage();
             if (this.local_time.getTime() !== 0) {
-                const writer = new bytestream_helper_1.Writer();
+                const writer = new bytestream_1.Writer();
                 writer.time_t(this.local_time, true);
                 payload.set('local_time', Types_1.BigInteger(writer.blob, 16), Types_1.StorageType.UINT64);
             }
@@ -1232,7 +1232,7 @@ var LevinPayloads;
             payload_data.set('current_height', Types_1.BigInteger(this.current_height), Types_1.StorageType.UINT32);
             payload_data.set('top_id', this.top_id, Types_1.StorageType.STRING);
             payload.set('payload_data', payload_data, Types_1.StorageType.OBJECT);
-            const peerList = new bytestream_helper_1.Writer();
+            const peerList = new bytestream_1.Writer();
             this.local_peerlist.forEach((peer) => peerList.write(peer.toBuffer()));
             if (peerList.length !== 0) {
                 payload.set('local_peerlist', peerList.buffer.toString('hex'), Types_1.StorageType.STRING);

@@ -3,12 +3,12 @@
 // Please see the included LICENSE file for more information.
 
 import { AddressPrefix } from './AddressPrefix';
-import { Base58 } from 'turtlecoin-base58';
+import { Base58 } from '@turtlecoin/base58';
 import { Common } from './Common';
 import { Config } from './Config';
 import { ED25519, TurtleCoinCrypto } from './Types';
-import { Mnemonics } from 'turtlecoin-mnemonics';
-import { Reader, Writer } from 'bytestream-helper';
+import { Mnemonics } from '@turtlecoin/mnemonics';
+import { Reader, Writer } from '@turtlecoin/bytestream';
 
 /** @ignore */
 interface Cache {

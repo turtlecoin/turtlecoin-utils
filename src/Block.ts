@@ -6,7 +6,7 @@ import { Config, ICoinConfig, ICoinRunningConfig } from './Config';
 import { Transaction } from './Transaction';
 import { ParentBlock } from './ParentBlock';
 import { TransactionInputs, TransactionOutputs, TurtleCoinCrypto } from './Types';
-import { Reader, Writer } from 'bytestream-helper';
+import { Reader, Writer } from '@turtlecoin/bytestream';
 import { Common } from './Common';
 
 /** @ignore */
