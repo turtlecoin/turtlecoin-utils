@@ -447,7 +447,7 @@ class Transaction {
             this.m_readonly = true;
             this.m_rawExtra = extra;
             this.m_extra = readExtra(this.m_rawExtra);
-            if (this.publicKey) {
+            if (this.publicKey && (yield Types_1.TurtleCoinCrypto.checkKey(this.publicKey))) {
                 yield this.transactionKeys.setPublicKey(this.publicKey);
             }
         });

@@ -546,7 +546,7 @@ export class Transaction {
 
         this.m_extra = readExtra(this.m_rawExtra);
 
-        if (this.publicKey) {
+        if (this.publicKey && await TurtleCoinCrypto.checkKey(this.publicKey)) {
             await this.transactionKeys.setPublicKey(this.publicKey);
         }
     }

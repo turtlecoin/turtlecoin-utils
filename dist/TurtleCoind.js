@@ -256,6 +256,7 @@ class TurtleCoind extends HTTPClient_1.HTTPClient {
                 timestamp
             });
             response.blocks = response.blocks.map((block) => {
+                block.timestamp = new Date(block.timestamp);
                 if (block.coinbaseTX) {
                     block.coinbaseTX.unlockTime = BigInteger(block.coinbaseTX.unlockTime);
                 }
