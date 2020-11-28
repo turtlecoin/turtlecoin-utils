@@ -84,7 +84,8 @@ export namespace ED25519 {
         public async setPrivateKey (key: string): Promise<void> {
             try {
                 this.m_privateKey = (await TurtleCoinCrypto.checkScalar(key))
-                    ? key : await TurtleCoinCrypto.scReduce32(key);
+                    ? key
+                    : await TurtleCoinCrypto.scReduce32(key);
             } catch (e) {
                 this.m_publicKey = key;
             }

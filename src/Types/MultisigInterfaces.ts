@@ -42,18 +42,18 @@ export namespace MultisigInterfaces {
     }
 
     /** @ignore */
+    export interface PublicSpendKey {
+        key: string;
+        signature: string;
+    }
+
+    /** @ignore */
     export interface Payload {
         publicSpendKeys: PublicSpendKey[];
         privateViewKey: string;
         partialKeyImages?: PartialKeyImage[];
         partialSigningKeys?: PartialSigningKey[];
         preparedTransactions?: Interfaces.PreparedTransaction[];
-    }
-
-    /** @ignore */
-    export interface PublicSpendKey {
-        key: string;
-        signature: string;
     }
 
     /** @ignore */

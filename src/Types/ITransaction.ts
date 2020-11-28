@@ -23,34 +23,6 @@ export namespace Interfaces {
     }
 
     /**
-     * Represents a prepared transaction
-     */
-    export interface PreparedTransaction {
-        /**
-         * The prepared transaction as a hexadecimal string (blob) -- this should be the prefix only (no signatures)
-         */
-        transaction: Transaction;
-        /**
-         * The transaction one-time private key.
-         * We need this value along with the list of addresses that funds are being sent to
-         * to ensure that funds are going where we believe the funds are going.
-         */
-        transactionPrivateKey: string;
-        /**
-         * The list of recipient addresses where funds are being sent to in the transaction.
-         * This is provided so that other participants can check the outputs to determine what
-         * amounts are going to which addresses so that they can verify that funds are going
-         * where they believe them to be going.
-         */
-        transactionRecipients: TransactionRecipient[];
-        /**
-         * The list of prepared ring signatures (incomplete) that are later used
-         * when we generate our partial signing key for the prepared transaction
-         */
-        signatureMeta: PreparedRingSignature[];
-    }
-
-    /**
      * Represents a prepared ring signature for a given input of a prepared transaction
      */
     export interface PreparedRingSignature {
@@ -87,6 +59,70 @@ export namespace Interfaces {
             tx_public_key?: string;
             outputIndex: number;
         };
+    }
+
+    /**
+     * Represents a prepared transaction
+     */
+    export interface PreparedTransaction {
+        /**
+         * The prepared transaction as a hexadecimal string (blob) -- this should be the prefix only (no signatures)
+         */
+        transaction: Transaction;
+        /**
+         * The transaction one-time private key.
+         * We need this value along with the list of addresses that funds are being sent to
+         * to ensure that funds are going where we believe the funds are going.
+         */
+        transactionPrivateKey: string;
+        /**
+         * The list of recipient addresses where funds are being sent to in the transaction.
+         * This is provided so that other participants can check the outputs to determine what
+         * amounts are going to which addresses so that they can verify that funds are going
+         * where they believe them to be going.
+         */
+        transactionRecipients: TransactionRecipient[];
+        /**
+         * The list of prepared ring signatures (incomplete) that are later used
+         * when we generate our partial signing key for the prepared transaction
+         */
+        signatureMeta: PreparedRingSignature[];
+    }
+
+    /**
+     * The derived input transaction keys
+     */
+    export interface InputKeys {
+        /**
+         * The derived public key
+         */
+        publicKey: string;
+        /**
+         * The key derivation
+         */
+        derivedKey: string;
+        /**
+         * The output index
+         */
+        outputIndex: number;
+    }
+
+    /**
+     * Represents a generated input if the output belongs to us
+     */
+    export interface GeneratedInput {
+        /**
+         * The derived transaction keys
+         */
+        transactionKeys: InputKeys;
+        /**
+         * The public ephemeral of the input
+         */
+        publicEphemeral: string;
+        /**
+         * the private ephemeral of the input
+         */
+        privateEphemeral?: string;
     }
 
     /**
@@ -155,40 +191,10 @@ export namespace Interfaces {
         globalIndex: number;
     }
 
-    /**
-     * Represents a generated input if the output belongs to us
-     */
-    export interface GeneratedInput {
-        /**
-         * The derived transaction keys
-         */
-        transactionKeys: InputKeys;
-        /**
-         * The public ephemeral of the input
-         */
-        publicEphemeral: string;
-        /**
-         * the private ephemeral of the input
-         */
-        privateEphemeral?: string;
-    }
-
-    /**
-     * The derived input transaction keys
-     */
-    export interface InputKeys {
-        /**
-         * The derived public key
-         */
-        publicKey: string;
-        /**
-         * The key derivation
-         */
-        derivedKey: string;
-        /**
-         * The output index
-         */
-        outputIndex: number;
+    /** @ignore */
+    export interface PreparedInputOutputs {
+        key: string;
+        index: number;
     }
 
     /** @ignore */
@@ -198,12 +204,6 @@ export namespace Interfaces {
         keyImage: string;
         input: GeneratedInput;
         outputs: PreparedInputOutputs[];
-    }
-
-    /** @ignore */
-    export interface PreparedInputOutputs {
-        key: string;
-        index: number;
     }
 
     /** @ignore */

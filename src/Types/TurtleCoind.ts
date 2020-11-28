@@ -552,6 +552,58 @@ export namespace TurtleCoindTypes {
         indexes: number[];
     }
 
+    export interface ISyncTransaction {
+        /**
+         * The transaction hash
+         */
+        hash: string;
+
+        /**
+         * An array of the transaction inputs
+         */
+        inputs: {
+            /**
+             * The amount of the input
+             */
+            amount: number;
+
+            /**
+             * The key image used for the input
+             */
+            keyImage: string;
+        }[];
+
+        /**
+         * An array of the transaction outputs
+         */
+        outputs: {
+            /**
+             * The amount of the output
+             */
+            amount: number;
+
+            /**
+             * The output key
+             */
+            key: string;
+        }[];
+
+        /**
+         * The payment ID of the transaction
+         */
+        paymentId: string;
+
+        /**
+         * The one-time public key of the transaction
+         */
+        publicKey: string;
+
+        /**
+         * The unlock time of the transaction
+         */
+        unlockTime: BigInteger.BigInteger;
+    }
+
     export interface ISyncBlock {
         /**
          * The block hash
@@ -606,58 +658,6 @@ export namespace TurtleCoindTypes {
          * An array of transactions in the block
          */
         transactions: ISyncTransaction[]
-    }
-
-    export interface ISyncTransaction {
-        /**
-         * The transaction hash
-         */
-        hash: string;
-
-        /**
-         * An array of the transaction inputs
-         */
-        inputs: {
-            /**
-             * The amount of the input
-             */
-            amount: number;
-
-            /**
-             * The key image used for the input
-             */
-            keyImage: string;
-        }[];
-
-        /**
-         * An array of the transaction outputs
-         */
-        outputs: {
-            /**
-             * The amount of the output
-             */
-            amount: number;
-
-            /**
-             * The output key
-             */
-            key: string;
-        }[];
-
-        /**
-         * The payment ID of the transaction
-         */
-        paymentId: string;
-
-        /**
-         * The one-time public key of the transaction
-         */
-        publicKey: string;
-
-        /**
-         * The unlock time of the transaction
-         */
-        unlockTime: BigInteger.BigInteger;
     }
 
     export interface ISync {

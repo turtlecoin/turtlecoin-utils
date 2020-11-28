@@ -874,7 +874,8 @@ export class LedgerNote extends EventEmitter implements ICryptoNote {
         if (extraData) {
             if (!(extraData instanceof Buffer)) {
                 extraData = (typeof extraData === 'string')
-                    ? Buffer.from(extraData) : Buffer.from(JSON.stringify(extraData));
+                    ? Buffer.from(extraData)
+                    : Buffer.from(JSON.stringify(extraData));
             }
 
             tx.addData(extraData);

@@ -584,12 +584,14 @@ export class LegacyTurtleCoind extends HTTPClient implements TurtleCoindTypes.IT
 
                 b.transactions.push({
                     hash: tx.hash,
-                    inputs: (tx.inputs) ? tx.inputs.map(input => {
-                        return {
-                            amount: input.amount,
-                            keyImage: input.k_image
-                        };
-                    }) : [],
+                    inputs: (tx.inputs)
+                        ? tx.inputs.map(input => {
+                            return {
+                                amount: input.amount,
+                                keyImage: input.k_image
+                            };
+                        })
+                        : [],
                     outputs: tx.outputs,
                     paymentId: header.meta.paymentId,
                     publicKey: tx.txPublicKey,

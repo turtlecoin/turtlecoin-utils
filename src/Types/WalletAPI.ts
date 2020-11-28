@@ -3,6 +3,21 @@
 // Please see the included LICENSE file for more information.
 
 export namespace WalletAPITypes {
+    export interface IBasicRequest {
+        /**
+         * The address of the destination
+         */
+        destination: string;
+        /**
+         * The amount to send
+         */
+        amount: number;
+        /**
+         * The payment ID to include
+         */
+        paymentID?: string;
+    }
+
     export interface IWalletBalance {
         /**
          * the amount of unlocked funds
