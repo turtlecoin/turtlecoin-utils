@@ -14,6 +14,8 @@ export declare namespace CryptoNoteInterfaces {
     }
     abstract class ICryptoNote extends EventEmitter {
         abstract on(event: 'user_confirm', listener: () => void): this;
+        abstract on(event: 'transport_receive', listener: (data: string) => void): this;
+        abstract on(event: 'transport_send', listener: (data: string) => void): this;
         abstract get config(): ICoinConfig;
         abstract set config(config: ICoinConfig);
         abstract get cryptoConfig(): ICryptoConfig;

@@ -60,6 +60,10 @@ export class LedgerNote extends EventEmitter implements ICryptoNote {
 
         this.m_ledger.on('user_confirm', () => this.emit('user_confirm'));
 
+        this.m_ledger.on('receive', (data: string) => this.emit('transport_receive', data));
+
+        this.m_ledger.on('send', (data: string) => this.emit('transport_send', data));
+
         if (config) {
             this.m_config = Common.mergeConfig(config);
         }
@@ -70,12 +74,26 @@ export class LedgerNote extends EventEmitter implements ICryptoNote {
     }
 
     /**
-     * Emits an event if we have sent a command to the ledger wallet that is likely awaiting
+     * Emits an event if we have sent a command to the cryptographic library that is likely awaiting
      * manual user confirmation on the device
      * @param event
      * @param listener
      */
     public on(event: 'user_confirm', listener: () => void): this;
+
+    /**
+     * Emits an event when the underlying cryptographic library receives data
+     * @param event
+     * @param listener
+     */
+    public on(event: 'transport_receive', listener: (data: string) => void): this;
+
+    /**
+     * Emits an event when the underlying cryptographic library sends data
+     * @param event
+     * @param listener
+     */
+    public on(event: 'transport_send', listener: (data: string) => void): this;
 
     /** @ignore */
     public on (event: any, listener: (...args: any[]) => void): this {

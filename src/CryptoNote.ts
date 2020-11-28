@@ -52,12 +52,26 @@ export class CryptoNote extends EventEmitter implements ICryptoNote {
     }
 
     /**
-     * Emits an event if we have sent a command to the ledger wallet that is likely awaiting
+     * Emits an event if we have sent a command to the cryptographic library that is likely awaiting
      * manual user confirmation on the device
      * @param event
      * @param listener
      */
     public on(event: 'user_confirm', listener: () => void): this;
+
+    /**
+     * Emits an event when the underlying cryptographic library receives data
+     * @param event
+     * @param listener
+     */
+    public on(event: 'transport_receive', listener: (data: string) => void): this;
+
+    /**
+     * Emits an event when the underlying cryptographic library sends data
+     * @param event
+     * @param listener
+     */
+    public on(event: 'transport_send', listener: (data: string) => void): this;
 
     /** @ignore */
     public on (event: any, listener: (...args: any[]) => void): this {

@@ -47,6 +47,8 @@ class LedgerNote extends events_1.EventEmitter {
         this.m_fetched = false;
         this.m_ledger = new LedgerDevice_1.LedgerDevice(transport, config);
         this.m_ledger.on('user_confirm', () => this.emit('user_confirm'));
+        this.m_ledger.on('receive', (data) => this.emit('transport_receive', data));
+        this.m_ledger.on('send', (data) => this.emit('transport_send', data));
         if (config) {
             this.m_config = Common_1.Common.mergeConfig(config);
         }
