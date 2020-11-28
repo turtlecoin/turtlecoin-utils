@@ -19,6 +19,7 @@ const Config_1 = require("./Config");
 const Common_1 = require("./Common");
 const Types_1 = require("./Types");
 const Transaction_1 = require("./Transaction");
+const events_1 = require("events");
 const Numeral = require("numeral");
 /** @ignore */
 const UINT64_MAX = Types_1.BigInteger(2).pow(64);
@@ -27,7 +28,7 @@ const UINT64_MAX = Types_1.BigInteger(2).pow(64);
  * various other cryptographic items during the receipt or transfer
  * of funds on the network
  */
-class CryptoNote {
+class CryptoNote extends events_1.EventEmitter {
     /**
      * Constructs a new instance of the object
      * If a configuration is supplied, it is also passed to the underlying
@@ -36,6 +37,7 @@ class CryptoNote {
      * @param cryptoConfig configuration to allow for overriding the provided cryptographic primitives
      */
     constructor(config, cryptoConfig) {
+        super();
         this.m_config = Config_1.Config;
         if (config) {
             this.m_config = Common_1.Common.mergeConfig(config);
@@ -43,6 +45,10 @@ class CryptoNote {
         if (cryptoConfig) {
             Types_1.TurtleCoinCrypto.userCryptoFunctions = cryptoConfig;
         }
+    }
+    /** @ignore */
+    on(event, listener) {
+        return super.on(event, listener);
     }
     /**
      * This does nothing in this class
@@ -514,7 +520,8 @@ class CryptoNote {
             if (extraData) {
                 if (!(extraData instanceof Buffer)) {
                     extraData = (typeof extraData === 'string')
-                        ? Buffer.from(extraData) : Buffer.from(JSON.stringify(extraData));
+                        ? Buffer.from(extraData)
+                        : Buffer.from(JSON.stringify(extraData));
                 }
                 tx.addData(extraData);
             }

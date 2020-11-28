@@ -1,16 +1,19 @@
+/// <reference types="node" />
 import { BigInteger, Interfaces } from '../Types';
 import { AddressPrefix } from '../AddressPrefix';
 import { Address } from '../Address';
 import { Transaction } from '../Transaction';
 import { ICoinConfig } from '../Config';
 import { ICryptoConfig } from 'turtlecoin-crypto';
+import { EventEmitter } from 'events';
 export declare namespace CryptoNoteInterfaces {
     interface IKeyImage {
         keyImage: string;
         publicEphemeral: string;
         privateEphemeral?: string;
     }
-    abstract class ICryptoNote {
+    abstract class ICryptoNote extends EventEmitter {
+        abstract on(event: 'user_confirm', listener: () => void): this;
         abstract get config(): ICoinConfig;
         abstract set config(config: ICoinConfig);
         abstract get cryptoConfig(): ICryptoConfig;

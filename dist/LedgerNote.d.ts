@@ -1,4 +1,5 @@
 /// <reference types="ledgerhq__hw-transport" />
+/// <reference types="node" />
 import { CryptoNoteInterfaces } from './Types/ICryptoNote';
 import { ICoinConfig, ICoinRunningConfig } from './Config';
 import Transport from '@ledgerhq/hw-transport';
@@ -6,6 +7,7 @@ import { BigInteger, ICryptoConfig, Interfaces } from './Types';
 import { AddressPrefix } from './AddressPrefix';
 import { Address } from './Address';
 import { Transaction } from './Transaction';
+import { EventEmitter } from 'events';
 /** @ignore */
 import ICryptoNote = CryptoNoteInterfaces.ICryptoNote;
 /**
@@ -13,7 +15,7 @@ import ICryptoNote = CryptoNoteInterfaces.ICryptoNote;
  * various other cryptographic items during the receipt or transfer of funds
  * on the network using a Ledger based hardware device
  */
-export declare class LedgerNote implements ICryptoNote {
+export declare class LedgerNote extends EventEmitter implements ICryptoNote {
     protected m_config: ICoinRunningConfig;
     private readonly m_ledger;
     private m_address;
@@ -25,6 +27,13 @@ export declare class LedgerNote implements ICryptoNote {
      * @param cryptoConfig configuration to allow for overriding the provided cryptographic primitives
      */
     constructor(transport: Transport, config?: ICoinConfig, cryptoConfig?: ICryptoConfig);
+    /**
+     * Emits an event if we have sent a command to the ledger wallet that is likely awaiting
+     * manual user confirmation on the device
+     * @param event
+     * @param listener
+     */
+    on(event: 'user_confirm', listener: () => void): this;
     /**
      * The current coin configuration
      */

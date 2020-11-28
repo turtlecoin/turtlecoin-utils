@@ -35,17 +35,17 @@ export declare namespace MultisigInterfaces {
         partialSigningKey: string;
     }
     /** @ignore */
+    interface PublicSpendKey {
+        key: string;
+        signature: string;
+    }
+    /** @ignore */
     interface Payload {
         publicSpendKeys: PublicSpendKey[];
         privateViewKey: string;
         partialKeyImages?: PartialKeyImage[];
         partialSigningKeys?: PartialSigningKey[];
         preparedTransactions?: Interfaces.PreparedTransaction[];
-    }
-    /** @ignore */
-    interface PublicSpendKey {
-        key: string;
-        signature: string;
     }
     /** @ignore */
     interface Transfer {

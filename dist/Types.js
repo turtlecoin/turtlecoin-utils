@@ -10,10 +10,10 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     o[k2] = m[k];
 }));
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BigInteger = exports.PortableStorageConstants = exports.TurtleCoinCrypto = void 0;
+exports.BigInteger = exports.StorageType = exports.PortableStorage = exports.PortableStorageConstants = exports.TurtleCoinCrypto = void 0;
 const turtlecoin_crypto_1 = require("turtlecoin-crypto");
 const BigInteger = require("big-integer");
 exports.BigInteger = BigInteger;
@@ -27,6 +27,7 @@ var PortableStorageConstants;
     PortableStorageConstants[PortableStorageConstants["SIGNATURE_B"] = 16908545] = "SIGNATURE_B";
     PortableStorageConstants[PortableStorageConstants["VERSION"] = 1] = "VERSION";
 })(PortableStorageConstants = exports.PortableStorageConstants || (exports.PortableStorageConstants = {}));
+__exportStar(require("./Types/PortableStorageValue"), exports);
 __exportStar(require("./Types/IExtraNonce"), exports);
 __exportStar(require("./Types/IExtraTag"), exports);
 __exportStar(require("./Types/ITransactionInput"), exports);

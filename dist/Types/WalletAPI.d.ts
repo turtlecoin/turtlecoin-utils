@@ -1,4 +1,18 @@
 export declare namespace WalletAPITypes {
+    interface IBasicRequest {
+        /**
+         * The address of the destination
+         */
+        destination: string;
+        /**
+         * The amount to send
+         */
+        amount: number;
+        /**
+         * The payment ID to include
+         */
+        paymentID?: string;
+    }
     interface IWalletBalance {
         /**
          * the amount of unlocked funds

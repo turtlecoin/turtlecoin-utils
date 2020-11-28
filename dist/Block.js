@@ -275,7 +275,8 @@ class Block {
                     block.m_parentBlock.minerTransaction.ignoredField = reader.varint().toJSNumber();
                 }
                 const blockchainBranchDepth = (block.m_parentBlock.minerTransaction.mergedMining)
-                    ? block.m_parentBlock.minerTransaction.mergedMining.depth : 0;
+                    ? block.m_parentBlock.minerTransaction.mergedMining.depth
+                    : 0;
                 for (let i = 0; i < blockchainBranchDepth; i++) {
                     block.m_parentBlock.blockchainBranch.push(reader.hash());
                 }

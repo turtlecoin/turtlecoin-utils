@@ -1,14 +1,16 @@
+/// <reference types="node" />
 import { AddressPrefix } from './AddressPrefix';
 import { ICoinConfig, ICoinRunningConfig } from './Config';
 import { BigInteger, Interfaces, CryptoNoteInterfaces, ICryptoConfig } from './Types';
 import { Transaction } from './Transaction';
+import { EventEmitter } from 'events';
 import ICryptoNote = CryptoNoteInterfaces.ICryptoNote;
 /**
  * CryptoNote helper class for constructing transactions and performing
  * various other cryptographic items during the receipt or transfer
  * of funds on the network
  */
-export declare class CryptoNote implements ICryptoNote {
+export declare class CryptoNote extends EventEmitter implements ICryptoNote {
     protected m_config: ICoinRunningConfig;
     /**
      * Constructs a new instance of the object
@@ -18,6 +20,13 @@ export declare class CryptoNote implements ICryptoNote {
      * @param cryptoConfig configuration to allow for overriding the provided cryptographic primitives
      */
     constructor(config?: ICoinConfig, cryptoConfig?: ICryptoConfig);
+    /**
+     * Emits an event if we have sent a command to the ledger wallet that is likely awaiting
+     * manual user confirmation on the device
+     * @param event
+     * @param listener
+     */
+    on(event: 'user_confirm', listener: () => void): this;
     /**
      * This does nothing in this class
      */

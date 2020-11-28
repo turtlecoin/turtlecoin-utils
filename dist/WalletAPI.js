@@ -414,11 +414,11 @@ t     * Deletes a previous prepared transaction
             amount = toAtomicUnits(amount, this.m_decimalDivisor);
             const request = {
                 destination: address,
-                amount: amount,
-                paymentID: paymentId || false
+                amount: amount
             };
-            if (!request.paymentID)
-                delete request.paymentID;
+            if (paymentId) {
+                request.paymentID = paymentId;
+            }
             const response = yield this.post('transactions/prepare/basic', request);
             if (response.fee)
                 response.fee = fromAtomicUnits(response.fee, this.m_decimalDivisor);
@@ -528,11 +528,11 @@ t     * Deletes a previous prepared transaction
             amount = toAtomicUnits(amount, this.m_decimalDivisor);
             const request = {
                 destination: address,
-                amount: amount,
-                paymentID: paymentId || false
+                amount: amount
             };
-            if (!request.paymentID)
-                delete request.paymentID;
+            if (paymentId) {
+                request.paymentID = paymentId;
+            }
             const response = yield this.post('transactions/send/basic', request);
             if (response.fee)
                 response.fee = fromAtomicUnits(response.fee, this.m_decimalDivisor);
@@ -746,6 +746,6 @@ function toAtomicUnits(amount, decimalDivisor) {
 }
 /** @ignore */
 function isHex(str) {
-    const regex = new RegExp('^[0-9a-fA-F]+$');
+    const regex = /^[0-9a-fA-F]+$/;
     return regex.test(str);
 }

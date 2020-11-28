@@ -21,6 +21,7 @@ const AddressPrefix_1 = require("./AddressPrefix");
 const Address_1 = require("./Address");
 const Numeral = require("numeral");
 const Transaction_1 = require("./Transaction");
+const events_1 = require("events");
 /** @ignore */
 var TransactionState = Types_1.LedgerTypes.TransactionState;
 /** @ignore */
@@ -32,7 +33,7 @@ const UINT64_MAX = Types_1.BigInteger(2).pow(64);
  * various other cryptographic items during the receipt or transfer of funds
  * on the network using a Ledger based hardware device
  */
-class LedgerNote {
+class LedgerNote extends events_1.EventEmitter {
     /**
      * Constructs a new instance of the Ledger-based CryptoNote tools
      * @param transport the transport mechanism for talking to a Ledger device
@@ -40,16 +41,22 @@ class LedgerNote {
      * @param cryptoConfig configuration to allow for overriding the provided cryptographic primitives
      */
     constructor(transport, config, cryptoConfig) {
+        super();
         this.m_config = Config_1.Config;
         this.m_address = new Address_1.Address();
         this.m_fetched = false;
         this.m_ledger = new LedgerDevice_1.LedgerDevice(transport, config);
+        this.m_ledger.on('user_confirm', () => this.emit('user_confirm'));
         if (config) {
             this.m_config = Common_1.Common.mergeConfig(config);
         }
         if (cryptoConfig) {
             Types_1.TurtleCoinCrypto.userCryptoFunctions = cryptoConfig;
         }
+    }
+    /** @ignore */
+    on(event, listener) {
+        return super.on(event, listener);
     }
     /**
      * The current coin configuration
@@ -655,7 +662,8 @@ class LedgerNote {
             if (extraData) {
                 if (!(extraData instanceof Buffer)) {
                     extraData = (typeof extraData === 'string')
-                        ? Buffer.from(extraData) : Buffer.from(JSON.stringify(extraData));
+                        ? Buffer.from(extraData)
+                        : Buffer.from(JSON.stringify(extraData));
                 }
                 tx.addData(extraData);
             }

@@ -39,6 +39,13 @@ export declare class LedgerDevice extends EventEmitter {
      */
     on(event: 'receive', listener: (data: string) => void): this;
     /**
+     * Emits an event if we have sent a command to the ledger wallet that is likely awaiting
+     * manual user confirmation on the device
+     * @param event
+     * @param listener
+     */
+    on(event: 'user_confirm', listener: () => void): this;
+    /**
      * Retrieves the current version of the application running
      * on the ledger device
      */

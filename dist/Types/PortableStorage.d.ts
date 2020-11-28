@@ -1,8 +1,6 @@
 /// <reference types="node" />
 import { Reader } from '@turtlecoin/bytestream';
-import { BigInteger } from '../Types';
-/** @ignore */
-declare type PortableStoreValue = BigInteger.BigInteger | Buffer | PortableStorage | PortableStorage[] | string | string[] | boolean;
+import { PortableStoreValue } from '../Types';
 /** @ignore */
 export declare enum StorageType {
     NULL = 0,

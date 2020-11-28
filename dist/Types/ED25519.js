@@ -76,7 +76,8 @@ var ED25519;
             return __awaiter(this, void 0, void 0, function* () {
                 try {
                     this.m_privateKey = (yield Types_1.TurtleCoinCrypto.checkScalar(key))
-                        ? key : yield Types_1.TurtleCoinCrypto.scReduce32(key);
+                        ? key
+                        : yield Types_1.TurtleCoinCrypto.scReduce32(key);
                 }
                 catch (e) {
                     this.m_publicKey = key;

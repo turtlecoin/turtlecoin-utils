@@ -758,8 +758,17 @@ class LedgerDevice extends events_1.EventEmitter {
             else {
                 writer.uint16_t(0);
             }
+            let event_timer;
+            if (confirm && requiresConfirmation(command)) {
+                event_timer = setTimeout(() => {
+                    this.emit('user_confirm');
+                }, 1000);
+            }
             this.emit('send', writer.blob);
             const result = yield this.m_transport.exchange(writer.buffer);
+            if (event_timer) {
+                clearTimeout(event_timer);
+            }
             this.emit('receive', (new bytestream_1.Reader(result)).unreadBuffer.toString('hex'));
             const code = result.slice(result.length - 2);
             const response = new bytestream_1.Reader(result.slice(0, result.length - code.length));
@@ -776,6 +785,31 @@ class LedgerDevice extends events_1.EventEmitter {
     }
 }
 exports.LedgerDevice = LedgerDevice;
+/** @ignore */
+function requiresConfirmation(command) {
+    switch (command) {
+        case Ledger_1.LedgerTypes.Command.VERSION:
+        case Ledger_1.LedgerTypes.Command.DEBUG:
+        case Ledger_1.LedgerTypes.Command.IDENT:
+        case Ledger_1.LedgerTypes.Command.CHECK_KEY:
+        case Ledger_1.LedgerTypes.Command.CHECK_SCALAR:
+        case Ledger_1.LedgerTypes.Command.RANDOM_KEY_PAIR:
+        case Ledger_1.LedgerTypes.Command.CHECK_RING_SIGNATURES:
+        case Ledger_1.LedgerTypes.Command.CHECK_SIGNATURE:
+        case Ledger_1.LedgerTypes.Command.TX_STATE:
+        case Ledger_1.LedgerTypes.Command.TX_START:
+        case Ledger_1.LedgerTypes.Command.TX_START_INPUT_LOAD:
+        case Ledger_1.LedgerTypes.Command.TX_LOAD_INPUT:
+        case Ledger_1.LedgerTypes.Command.TX_START_OUTPUT_LOAD:
+        case Ledger_1.LedgerTypes.Command.TX_LOAD_OUTPUT:
+        case Ledger_1.LedgerTypes.Command.TX_FINALIZE_TX_PREFIX:
+        case Ledger_1.LedgerTypes.Command.TX_DUMP:
+        case Ledger_1.LedgerTypes.Command.TX_RESET:
+            return false;
+        default:
+            return true;
+    }
+}
 /**
  * @ignore
  */
