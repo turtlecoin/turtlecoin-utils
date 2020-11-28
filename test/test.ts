@@ -1851,7 +1851,15 @@ describe('Test Ledger Integration', async function () {
 
             ledger = new LedgerNote(transport);
 
+            ledger.on('user_confirm', () => {
+                console.warn('Awaiting user confirmation on hardware device...');
+            });
+
             device = new LedgerDevice(transport);
+
+            device.on('user_confirm', () => {
+                console.warn('Awaiting user confirmation on hardware device...');
+            });
         } catch (e) {
             skipLedgerTests = true;
 

@@ -12,6 +12,9 @@ import { Common } from './Common';
 import * as semver from 'semver';
 
 /** @ignore */
+import Timeout = NodeJS.Timeout;
+
+/** @ignore */
 export { Transport as LedgerTransport };
 
 /** @ignore */
@@ -62,6 +65,14 @@ export class LedgerDevice extends EventEmitter {
      * @param listener the listener function
      */
     public on(event: 'receive', listener: (data: string) => void): this;
+
+    /**
+     * Emits an event if we have sent a command to the ledger wallet that is likely awaiting
+     * manual user confirmation on the device
+     * @param event
+     * @param listener
+     */
+    public on(event: 'user_confirm', listener: () => void): this;
 
     /** @ignore */
     public on (event: any, listener: (...args: any[]) => void): this {
@@ -967,9 +978,21 @@ export class LedgerDevice extends EventEmitter {
             writer.uint16_t(0);
         }
 
+        let event_timer: Timeout | undefined;
+
+        if (confirm && requiresConfirmation(command)) {
+            event_timer = setTimeout(() => {
+                this.emit('user_confirm');
+            }, 1000);
+        }
+
         this.emit('send', writer.blob);
 
         const result = await this.m_transport.exchange(writer.buffer);
+
+        if (event_timer) {
+            clearTimeout(event_timer);
+        }
 
         this.emit('receive', (new Reader(result)).unreadBuffer.toString('hex'));
 
@@ -990,6 +1013,32 @@ export class LedgerDevice extends EventEmitter {
         }
 
         return response;
+    }
+}
+
+/** @ignore */
+function requiresConfirmation (command: LedgerTypes.Command): boolean {
+    switch (command) {
+        case LedgerTypes.Command.VERSION:
+        case LedgerTypes.Command.DEBUG:
+        case LedgerTypes.Command.IDENT:
+        case LedgerTypes.Command.CHECK_KEY:
+        case LedgerTypes.Command.CHECK_SCALAR:
+        case LedgerTypes.Command.RANDOM_KEY_PAIR:
+        case LedgerTypes.Command.CHECK_RING_SIGNATURES:
+        case LedgerTypes.Command.CHECK_SIGNATURE:
+        case LedgerTypes.Command.TX_STATE:
+        case LedgerTypes.Command.TX_START:
+        case LedgerTypes.Command.TX_START_INPUT_LOAD:
+        case LedgerTypes.Command.TX_LOAD_INPUT:
+        case LedgerTypes.Command.TX_START_OUTPUT_LOAD:
+        case LedgerTypes.Command.TX_LOAD_OUTPUT:
+        case LedgerTypes.Command.TX_FINALIZE_TX_PREFIX:
+        case LedgerTypes.Command.TX_DUMP:
+        case LedgerTypes.Command.TX_RESET:
+            return false;
+        default:
+            return true;
     }
 }
 

@@ -8,6 +8,7 @@ import { Address } from '../Address';
 import { Transaction } from '../Transaction';
 import { ICoinConfig } from '../Config';
 import { ICryptoConfig } from 'turtlecoin-crypto';
+import { EventEmitter } from 'events';
 
 export namespace CryptoNoteInterfaces {
     export interface IKeyImage {
@@ -16,7 +17,9 @@ export namespace CryptoNoteInterfaces {
         privateEphemeral?: string;
     }
 
-    export abstract class ICryptoNote {
+    export abstract class ICryptoNote extends EventEmitter {
+        public abstract on(event: 'user_confirm', listener: () => void): this;
+
         public abstract get config(): ICoinConfig;
 
         public abstract set config(config: ICoinConfig);

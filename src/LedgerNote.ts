@@ -21,6 +21,7 @@ import { AddressPrefix } from './AddressPrefix';
 import { Address } from './Address';
 import * as Numeral from 'numeral';
 import { Transaction } from './Transaction';
+import { EventEmitter } from 'events';
 
 /** @ignore */
 import ICryptoNote = CryptoNoteInterfaces.ICryptoNote;
@@ -40,7 +41,7 @@ const UINT64_MAX = BigInteger(2).pow(64);
  * various other cryptographic items during the receipt or transfer of funds
  * on the network using a Ledger based hardware device
  */
-export class LedgerNote implements ICryptoNote {
+export class LedgerNote extends EventEmitter implements ICryptoNote {
     protected m_config: ICoinRunningConfig = Config;
     private readonly m_ledger: LedgerDevice;
     private m_address: Address = new Address();
@@ -53,7 +54,11 @@ export class LedgerNote implements ICryptoNote {
      * @param cryptoConfig configuration to allow for overriding the provided cryptographic primitives
      */
     constructor (transport: Transport, config?: ICoinConfig, cryptoConfig?: ICryptoConfig) {
+        super();
+
         this.m_ledger = new LedgerDevice(transport, config);
+
+        this.m_ledger.on('user_confirm', () => this.emit('user_confirm'));
 
         if (config) {
             this.m_config = Common.mergeConfig(config);
@@ -62,6 +67,19 @@ export class LedgerNote implements ICryptoNote {
         if (cryptoConfig) {
             TurtleCoinCrypto.userCryptoFunctions = cryptoConfig;
         }
+    }
+
+    /**
+     * Emits an event if we have sent a command to the ledger wallet that is likely awaiting
+     * manual user confirmation on the device
+     * @param event
+     * @param listener
+     */
+    public on(event: 'user_confirm', listener: () => void): this;
+
+    /** @ignore */
+    public on (event: any, listener: (...args: any[]) => void): this {
+        return super.on(event, listener);
     }
 
     /**
