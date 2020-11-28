@@ -30,19 +30,19 @@ export namespace CryptoNoteInterfaces {
 
         public abstract get address(): Address | undefined;
 
-        public abstract async init(): Promise<void>;
+        public abstract init(): Promise<void>;
 
-        public abstract async fetchKeys(): Promise<void>;
+        public abstract fetchKeys(): Promise<void>;
 
         public abstract absoluteToRelativeOffsets(offsets: BigInteger.BigInteger[] | string[] | number[]): number[];
 
         public abstract relativeToAbsoluteOffsets(offsets: BigInteger.BigInteger[] | string[] | number[]): number[];
 
-        public abstract async generateKeyDerivation(
+        public abstract generateKeyDerivation(
             transactionPublicKey: string,
             privateViewKey: string): Promise<string>;
 
-        public abstract async generateKeyImage(
+        public abstract generateKeyImage(
             transactionPublicKey: string,
             privateViewKey: string,
             publicSpendKey: string,
@@ -50,16 +50,16 @@ export namespace CryptoNoteInterfaces {
             outputIndex: number
         ): Promise<IKeyImage>;
 
-        public abstract async generateKeyImagePrimitive(
+        public abstract generateKeyImagePrimitive(
             publicSpendKey: string,
             privateSpendKey: string,
             outputIndex: number,
             derivation: string
         ): Promise<IKeyImage>;
 
-        public abstract async privateKeyToPublicKey(privateKey: string): Promise<string>;
+        public abstract privateKeyToPublicKey(privateKey: string): Promise<string>;
 
-        public abstract async scanTransactionOutputs(
+        public abstract scanTransactionOutputs(
             transactionPublicKey: string,
             outputs: Interfaces.Output[],
             privateViewKey: string,
@@ -68,7 +68,7 @@ export namespace CryptoNoteInterfaces {
             generatePartial?: boolean
         ): Promise<Interfaces.Output[]>;
 
-        public abstract async isOurTransactionOutput (
+        public abstract isOurTransactionOutput (
             transactionPublicKey: string,
             output: Interfaces.Output,
             privateViewKey: string,
@@ -79,7 +79,7 @@ export namespace CryptoNoteInterfaces {
 
         public abstract calculateMinimumTransactionFee (txSize: number): number
 
-        public abstract async createIntegratedAddress (
+        public abstract createIntegratedAddress (
             address: string,
             paymentId: string,
             prefix?: AddressPrefix | number
@@ -87,20 +87,20 @@ export namespace CryptoNoteInterfaces {
 
         public abstract formatMoney (amount: BigInteger.BigInteger | number): string;
 
-        public abstract async generateTransactionOutputs (
+        public abstract generateTransactionOutputs (
             address: string,
             amount: number
         ): Promise<Interfaces.GeneratedOutput[]>;
 
-        public abstract async signMessage (message: any, privateKey: string): Promise<string>;
+        public abstract signMessage (message: any, privateKey: string): Promise<string>;
 
-        public abstract async verifyMessageSignature (
+        public abstract verifyMessageSignature (
             message: any,
             publicKey: string,
             signature: string
         ): Promise<boolean>;
 
-        public abstract async createTransaction (
+        public abstract createTransaction (
             outputs: Interfaces.GeneratedOutput[],
             inputs: Interfaces.Output[],
             randomOutputs: Interfaces.RandomOutput[][],
@@ -111,7 +111,7 @@ export namespace CryptoNoteInterfaces {
             extraData?: any
         ): Promise<Transaction>;
 
-        public abstract async createTransactionStructure (
+        public abstract createTransactionStructure (
             outputs: Interfaces.GeneratedOutput[],
             inputs: Interfaces.Output[],
             randomOutputs: Interfaces.RandomOutput[][],
@@ -122,7 +122,7 @@ export namespace CryptoNoteInterfaces {
             extraData?: any
         ): Promise<Interfaces.IPreparedTransaction>;
 
-        public abstract async prepareTransaction (
+        public abstract prepareTransaction (
             outputs: Interfaces.GeneratedOutput[],
             inputs: Interfaces.Output[],
             randomOutputs: Interfaces.RandomOutput[][],
@@ -134,7 +134,7 @@ export namespace CryptoNoteInterfaces {
             randomKey?: string
         ): Promise<Interfaces.PreparedTransaction>;
 
-        public abstract async completeTransaction (
+        public abstract completeTransaction (
             preparedTransaction: Interfaces.PreparedTransaction,
             privateSpendKey: string
         ): Promise<Transaction>;

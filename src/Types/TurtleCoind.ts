@@ -718,56 +718,56 @@ export namespace TurtleCoindTypes {
      * Defines the necessary methods that must be implemented by a TurtleCoind interface
      */
     export abstract class ITurtleCoind {
-        public abstract async fee(): Promise<IFee>;
+        public abstract fee(): Promise<IFee>;
 
-        public abstract async height(): Promise<IHeight>;
+        public abstract height(): Promise<IHeight>;
 
-        public abstract async info(): Promise<IInfo>;
+        public abstract info(): Promise<IInfo>;
 
-        public abstract async peers(): Promise<IPeers>;
+        public abstract peers(): Promise<IPeers>;
 
-        public abstract async blockCount(): Promise<number>;
+        public abstract blockCount(): Promise<number>;
 
-        public abstract async block(block: string | number): Promise<IBlock>;
+        public abstract block(block: string | number): Promise<IBlock>;
 
-        public abstract async lastBlock(): Promise<IBlock>;
+        public abstract lastBlock(): Promise<IBlock>;
 
-        public abstract async blockHeaders(height: number): Promise<IBlock[]>;
+        public abstract blockHeaders(height: number): Promise<IBlock[]>;
 
-        public abstract async rawBlock(block: string | number): Promise<IRawBlock>;
+        public abstract rawBlock(block: string | number): Promise<IRawBlock>;
 
-        public abstract async blockTemplate(address: string, reserveSize: number): Promise<IBlockTemplate>;
+        public abstract blockTemplate(address: string, reserveSize: number): Promise<IBlockTemplate>;
 
-        public abstract async submitBlock(block: string): Promise<string>;
+        public abstract submitBlock(block: string): Promise<string>;
 
-        public abstract async submitTransaction(transaction: string): Promise<string>;
+        public abstract submitTransaction(transaction: string): Promise<string>;
 
-        public abstract async transaction(hash: string): Promise<ITransaction>;
+        public abstract transaction(hash: string): Promise<ITransaction>;
 
-        public abstract async rawTransaction(hash: string): Promise<string>;
+        public abstract rawTransaction(hash: string): Promise<string>;
 
-        public abstract async transactionPool(): Promise<TransactionSummary[]>;
+        public abstract transactionPool(): Promise<TransactionSummary[]>;
 
-        public abstract async rawTransactionPool(): Promise<string[]>;
+        public abstract rawTransactionPool(): Promise<string[]>;
 
-        public abstract async transactionPoolChanges(
+        public abstract transactionPoolChanges(
             lastKnownBlock: string,
             transactions: string[]): Promise<ITransactionPoolDelta>;
 
-        public abstract async transactionsStatus(transactions: string[]): Promise<ITransactionsStatus>;
+        public abstract transactionsStatus(transactions: string[]): Promise<ITransactionsStatus>;
 
-        public abstract async randomIndexes(amounts: number[], count: number): Promise<IRandomOutput[]>;
+        public abstract randomIndexes(amounts: number[], count: number): Promise<IRandomOutput[]>;
 
-        public abstract async indexes(startHeight: number, endHeight: number): Promise<ITransactionIndexes[]>;
+        public abstract indexes(startHeight: number, endHeight: number): Promise<ITransactionIndexes[]>;
 
-        public abstract async sync(
+        public abstract sync(
             checkpoints: string[],
             height: number,
             timestamp: number,
             skipCoinbaseTransactions: boolean,
             count: number): Promise<ISync>;
 
-        public abstract async rawSync(
+        public abstract rawSync(
             checkpoints: string[],
             height: number,
             timestamp: number,
