@@ -1,10 +1,10 @@
 {
-    "name": "TurtleCoin-Utils",
-    "out": "./docs",
-    "excludeExternals": true,
-    "excludeNotExported": true,
-    "excludePrivate": true,
-    "excludeProtected": true,
-    "listInvalidSymbolLinks": true,
-    "mode": "file"
+  "out": "./docs",
+  "excludeExternals": true,
+  "excludePrivate": false,
+  "entryPoints": [
+    "./src/index.ts"
+  ],
+  "disableSources": true,
+  "listInvalidSymbolLinks": true
 }

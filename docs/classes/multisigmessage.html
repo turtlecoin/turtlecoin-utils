@@ -3,10 +3,11 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MultisigMessage | TurtleCoin-Utils</title>
-	<meta name="description" content="Documentation for TurtleCoin-Utils">
+	<title>MultisigMessage | turtlecoin-utils</title>
+	<meta name="description" content="Documentation for turtlecoin-utils">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -22,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">TurtleCoin-Utils</a>
+					<a href="../index.html" class="title">turtlecoin-utils</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -49,7 +50,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../globals.html">Globals</a>
+					<a href="../modules.html">turtlecoin-utils</a>
 				</li>
 				<li>
 					<a href="multisigmessage.html">MultisigMessage</a>
@@ -87,6 +88,19 @@
 								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="multisigmessage.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="multisigmessage.html#m_destination" class="tsd-kind-icon">m_<wbr>destination</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="multisigmessage.html#m_nonce" class="tsd-kind-icon">m_<wbr>nonce</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="multisigmessage.html#m_partialkeyimages" class="tsd-kind-icon">m_<wbr>partial<wbr>Key<wbr>Images</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="multisigmessage.html#m_partialsigningkeys" class="tsd-kind-icon">m_<wbr>partial<wbr>Signing<wbr>Keys</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="multisigmessage.html#m_preparedtransactions" class="tsd-kind-icon">m_<wbr>prepared<wbr>Transactions</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="multisigmessage.html#m_privateviewkey" class="tsd-kind-icon">m_<wbr>private<wbr>View<wbr>Key</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="multisigmessage.html#m_source" class="tsd-kind-icon">m_<wbr>source</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="multisigmessage.html#m_spendkeys" class="tsd-kind-icon">m_<wbr>spend<wbr>Keys</a></li>
+							</ul>
+						</section>
 						<section class="tsd-index-section ">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
@@ -117,14 +131,11 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Multisig<wbr>Message<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">?: </span><a href="address.html" class="tsd-signature-type">Address</a>, destination<span class="tsd-signature-symbol">?: </span><a href="address.html" class="tsd-signature-type">Address</a>, nonce<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="multisigmessage.html" class="tsd-signature-type">MultisigMessage</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Multisig<wbr>Message<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">?: </span><a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a>, destination<span class="tsd-signature-symbol">?: </span><a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a>, nonce<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="multisigmessage.html" class="tsd-signature-type" data-tsd-kind="Class">MultisigMessage</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L190">src/MultisigMessage.ts:190</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -134,18 +145,77 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> source: <a href="address.html" class="tsd-signature-type">Address</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> source: <a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> destination: <a href="address.html" class="tsd-signature-type">Address</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> destination: <a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> nonce: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> nonce: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="multisigmessage.html" class="tsd-signature-type">MultisigMessage</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="multisigmessage.html" class="tsd-signature-type" data-tsd-kind="Class">MultisigMessage</a></h4>
 						</li>
 					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="m_destination" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> m_<wbr>destination</h3>
+					<div class="tsd-signature tsd-kind-icon">m_<wbr>destination<span class="tsd-signature-symbol">:</span> <a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="m_nonce" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> m_<wbr>nonce</h3>
+					<div class="tsd-signature tsd-kind-icon">m_<wbr>nonce<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="m_partialkeyimages" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> m_<wbr>partial<wbr>Key<wbr>Images</h3>
+					<div class="tsd-signature tsd-kind-icon">m_<wbr>partial<wbr>Key<wbr>Images<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PartialKeyImage</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="m_partialsigningkeys" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> m_<wbr>partial<wbr>Signing<wbr>Keys</h3>
+					<div class="tsd-signature tsd-kind-icon">m_<wbr>partial<wbr>Signing<wbr>Keys<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PartialSigningKey</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="m_preparedtransactions" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> m_<wbr>prepared<wbr>Transactions</h3>
+					<div class="tsd-signature tsd-kind-icon">m_<wbr>prepared<wbr>Transactions<span class="tsd-signature-symbol">:</span> <a href="../interfaces/interfaces.preparedtransaction.html" class="tsd-signature-type" data-tsd-kind="Interface">PreparedTransaction</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="m_privateviewkey" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> m_<wbr>private<wbr>View<wbr>Key</h3>
+					<div class="tsd-signature tsd-kind-icon">m_<wbr>private<wbr>View<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">KeyPair</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="m_source" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> m_<wbr>source</h3>
+					<div class="tsd-signature tsd-kind-icon">m_<wbr>source<span class="tsd-signature-symbol">:</span> <a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="m_spendkeys" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> m_<wbr>spend<wbr>Keys</h3>
+					<div class="tsd-signature tsd-kind-icon">m_<wbr>spend<wbr>Keys<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">KeyPair</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -154,28 +224,22 @@
 					<a name="destination" class="tsd-anchor"></a>
 					<h3>destination</h3>
 					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> destination<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type">Address</a></li>
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> destination<span class="tsd-signature-symbol">(</span>destination<span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type">Address</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> destination<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> destination<span class="tsd-signature-symbol">(</span>destination<span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L46">src/MultisigMessage.ts:46</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>The destination individual wallet address the message is being sent TO</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="address.html" class="tsd-signature-type">Address</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L50">src/MultisigMessage.ts:50</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -185,7 +249,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>destination: <a href="address.html" class="tsd-signature-type">Address</a></h5>
+									<h5>destination: <a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -201,9 +265,6 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L57">src/MultisigMessage.ts:57</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -218,28 +279,22 @@
 					<a name="partialkeyimages" class="tsd-anchor"></a>
 					<h3>partial<wbr>Key<wbr>Images</h3>
 					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> partialKeyImages<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/multisiginterfaces.partialkeyimage.html" class="tsd-signature-type">PartialKeyImage</a><span class="tsd-signature-symbol">[]</span></li>
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> partialKeyImages<span class="tsd-signature-symbol">(</span>partialKeyImages<span class="tsd-signature-symbol">: </span><a href="../interfaces/multisiginterfaces.partialkeyimage.html" class="tsd-signature-type">PartialKeyImage</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> partialKeyImages<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PartialKeyImage</span><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> partialKeyImages<span class="tsd-signature-symbol">(</span>partialKeyImages<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PartialKeyImage</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L71">src/MultisigMessage.ts:71</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>The partial key images transferred in the message</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/multisiginterfaces.partialkeyimage.html" class="tsd-signature-type">PartialKeyImage</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PartialKeyImage</span><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L75">src/MultisigMessage.ts:75</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -249,7 +304,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>partialKeyImages: <a href="../interfaces/multisiginterfaces.partialkeyimage.html" class="tsd-signature-type">PartialKeyImage</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>partialKeyImages: <span class="tsd-signature-type">PartialKeyImage</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -260,28 +315,22 @@
 					<a name="partialsigningkeys" class="tsd-anchor"></a>
 					<h3>partial<wbr>Signing<wbr>Keys</h3>
 					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> partialSigningKeys<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/multisiginterfaces.partialsigningkey.html" class="tsd-signature-type">PartialSigningKey</a><span class="tsd-signature-symbol">[]</span></li>
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> partialSigningKeys<span class="tsd-signature-symbol">(</span>partialSigningKeys<span class="tsd-signature-symbol">: </span><a href="../interfaces/multisiginterfaces.partialsigningkey.html" class="tsd-signature-type">PartialSigningKey</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> partialSigningKeys<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PartialSigningKey</span><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> partialSigningKeys<span class="tsd-signature-symbol">(</span>partialSigningKeys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PartialSigningKey</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L82">src/MultisigMessage.ts:82</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>The partial signing keys transferred in the message</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/multisiginterfaces.partialsigningkey.html" class="tsd-signature-type">PartialSigningKey</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PartialSigningKey</span><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L86">src/MultisigMessage.ts:86</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -291,7 +340,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>partialSigningKeys: <a href="../interfaces/multisiginterfaces.partialsigningkey.html" class="tsd-signature-type">PartialSigningKey</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>partialSigningKeys: <span class="tsd-signature-type">PartialSigningKey</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -302,28 +351,22 @@
 					<a name="preparedtransactions" class="tsd-anchor"></a>
 					<h3>prepared<wbr>Transactions</h3>
 					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> preparedTransactions<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TransactionInterfaces.PreparedTransaction</span><span class="tsd-signature-symbol">[]</span></li>
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> preparedTransactions<span class="tsd-signature-symbol">(</span>preparedTransactions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TransactionInterfaces.PreparedTransaction</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> preparedTransactions<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/interfaces.preparedtransaction.html" class="tsd-signature-type" data-tsd-kind="Interface">PreparedTransaction</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> preparedTransactions<span class="tsd-signature-symbol">(</span>preparedTransactions<span class="tsd-signature-symbol">: </span><a href="../interfaces/interfaces.preparedtransaction.html" class="tsd-signature-type" data-tsd-kind="Interface">PreparedTransaction</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L93">src/MultisigMessage.ts:93</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>The prepared transactions transferred in the message</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">TransactionInterfaces.PreparedTransaction</span><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/interfaces.preparedtransaction.html" class="tsd-signature-type" data-tsd-kind="Interface">PreparedTransaction</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L97">src/MultisigMessage.ts:97</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -333,7 +376,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>preparedTransactions: <span class="tsd-signature-type">TransactionInterfaces.PreparedTransaction</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>preparedTransactions: <a href="../interfaces/interfaces.preparedtransaction.html" class="tsd-signature-type" data-tsd-kind="Interface">PreparedTransaction</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -344,28 +387,22 @@
 					<a name="source" class="tsd-anchor"></a>
 					<h3>source</h3>
 					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> source<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type">Address</a></li>
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> source<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type">Address</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> source<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> source<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L29">src/MultisigMessage.ts:29</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>The source individual wallet address that the message is being sent FROM</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="address.html" class="tsd-signature-type">Address</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L33">src/MultisigMessage.ts:33</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -375,7 +412,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>source: <a href="address.html" class="tsd-signature-type">Address</a></h5>
+									<h5>source: <a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -386,21 +423,18 @@
 					<a name="spendkeys" class="tsd-anchor"></a>
 					<h3>spend<wbr>Keys</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> spendKeys<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ed25519.keypair.html" class="tsd-signature-type">KeyPair</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> spendKeys<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">KeyPair</span><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L64">src/MultisigMessage.ts:64</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>The multisig public spend keys transferred in the message</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="ed25519.keypair.html" class="tsd-signature-type">KeyPair</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">KeyPair</span><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -413,9 +447,6 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L22">src/MultisigMessage.ts:22</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -433,14 +464,11 @@
 					<a name="addspendkeys" class="tsd-anchor"></a>
 					<h3>add<wbr>Spend<wbr>Keys</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Spend<wbr>Keys<span class="tsd-signature-symbol">(</span>keypair<span class="tsd-signature-symbol">: </span><a href="ed25519.keypair.html" class="tsd-signature-type">KeyPair</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Spend<wbr>Keys<span class="tsd-signature-symbol">(</span>keypair<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">KeyPair</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L221">src/MultisigMessage.ts:221</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -452,7 +480,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>keypair: <a href="ed25519.keypair.html" class="tsd-signature-type">KeyPair</a></h5>
+									<h5>keypair: <span class="tsd-signature-type">KeyPair</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The spend key pair to include.</p>
 									</div>
@@ -471,9 +499,6 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L247">src/MultisigMessage.ts:247</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -496,14 +521,11 @@
 					<a name="decode" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> decode</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">decode<span class="tsd-signature-symbol">(</span>destination<span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type">Address</a>, base58<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="multisigmessage.html" class="tsd-signature-type">MultisigMessage</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">decode<span class="tsd-signature-symbol">(</span>destination<span class="tsd-signature-symbol">: </span><a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a>, base58<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="multisigmessage.html" class="tsd-signature-type" data-tsd-kind="Class">MultisigMessage</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/turtlecoin/turtlecoin-utils/blob/02dd15b/src/MultisigMessage.ts#L111">src/MultisigMessage.ts:111</a></li>
-								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
@@ -519,7 +541,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>destination: <a href="address.html" class="tsd-signature-type">Address</a></h5>
+									<h5>destination: <a href="address.html" class="tsd-signature-type" data-tsd-kind="Class">Address</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The wallet address that this message was sent</p>
 									</div>
@@ -531,7 +553,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="multisigmessage.html" class="tsd-signature-type">MultisigMessage</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="multisigmessage.html" class="tsd-signature-type" data-tsd-kind="Class">MultisigMessage</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -540,8 +562,8 @@
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="../globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
@@ -584,6 +606,30 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="multisigmessage.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="multisigmessage.html#m_destination" class="tsd-kind-icon">m_<wbr>destination</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="multisigmessage.html#m_nonce" class="tsd-kind-icon">m_<wbr>nonce</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="multisigmessage.html#m_partialkeyimages" class="tsd-kind-icon">m_<wbr>partial<wbr>Key<wbr>Images</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="multisigmessage.html#m_partialsigningkeys" class="tsd-kind-icon">m_<wbr>partial<wbr>Signing<wbr>Keys</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="multisigmessage.html#m_preparedtransactions" class="tsd-kind-icon">m_<wbr>prepared<wbr>Transactions</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="multisigmessage.html#m_privateviewkey" class="tsd-kind-icon">m_<wbr>private<wbr>View<wbr>Key</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="multisigmessage.html#m_source" class="tsd-kind-icon">m_<wbr>source</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="multisigmessage.html#m_spendkeys" class="tsd-kind-icon">m_<wbr>spend<wbr>Keys</a>
 							</li>
 							<li class=" tsd-kind-accessor tsd-parent-kind-class">
 								<a href="multisigmessage.html#destination" class="tsd-kind-icon">destination</a>
@@ -635,7 +681,7 @@
 						<a href="walletapi.html" class="tsd-kind-icon">WalletAPI</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="../globals.html#on" class="tsd-kind-icon">on</a>
+						<a href="../modules.html#on" class="tsd-kind-icon">on</a>
 					</li>
 				</ul>
 			</nav>
@@ -653,8 +699,12 @@
 				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
