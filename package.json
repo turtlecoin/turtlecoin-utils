@@ -1,6 +1,6 @@
 {
   "name": "turtlecoin-utils",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "A Typescript/CommonJS collection of utilities useful for TurtleCoin developers",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -43,10 +43,16 @@
     "@ledgerhq/hw-transport-node-hid": "^5.22.0"
   },
   "dependencies": {
-    "@turtlecoin/base58": "0.0.10",
-    "@turtlecoin/bytestream": "0.0.14",
-    "@turtlecoin/mnemonics": "0.0.10",
+    "@ledgerhq/hw-transport": "^5.43.0",
+    "@turtlecoin/base58": "0.0.14",
+    "@turtlecoin/bytestream": "0.0.16",
+    "@turtlecoin/mnemonics": "0.0.12",
+    "@types/aes-js": "^3.1.1",
+    "@types/ledgerhq__hw-transport": "^4.21.3",
+    "@types/ledgerhq__hw-transport-node-hid": "^4.22.2",
     "@types/node-fetch": "^2.5.8",
+    "@types/numeral": "^2.0.0",
+    "@types/semver": "^7.3.4",
     "abort-controller": "^3.0.0",
     "aes-js": "^3.1.2",
     "big-integer": "^1.6.48",
@@ -57,14 +63,8 @@
     "turtlecoin-crypto": "^6.0.2"
   },
   "devDependencies": {
-    "@ledgerhq/hw-transport": "^5.43.0",
-    "@types/aes-js": "^3.1.1",
-    "@types/ledgerhq__hw-transport": "^4.21.3",
-    "@types/ledgerhq__hw-transport-node-hid": "^4.22.2",
     "@types/mocha": "^8.2.1",
-    "@types/node": "^14.14.30",
-    "@types/numeral": "0.0.28",
-    "@types/semver": "^7.3.4",
+    "@types/node": "^14.14.31",
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
     "eslint": "^7.20.0",
@@ -74,7 +74,7 @@
     "eslint-plugin-promise": "^4.3.1",
     "mocha": "^8.3.0",
     "ts-node": "^9.1.1",
-    "typedoc": "^0.20.25",
+    "typedoc": "^0.20.27",
     "typescript": "^4.1.5"
   }
 }
