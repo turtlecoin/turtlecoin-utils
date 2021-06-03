@@ -18,10 +18,10 @@ export class WalletAPI extends HTTPClient {
     /**
      * Initializes a new WalletAPI interface
      * @param password the API password for the WalletAPI instance
-     * @param host the address of the daemon
-     * @param port the port of the daemon
+     * @param host the address of the wallet-api instance
+     * @param port the port of the wallet-api instance
      * @param timeout the timeout to wait for each request in ms
-     * @param ssl whether the daemon uses SSL (HTTPS) or not
+     * @param ssl whether the wallet-api instance uses SSL (HTTPS) or not
      * @param userAgent the user agent string to use with requests
      * @param keepAlive whether the underlying HTTP(s) connection should be kept alive and reused
      * @param defaultMixin the default mixin used for generated transactions
