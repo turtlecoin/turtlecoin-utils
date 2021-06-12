@@ -60,7 +60,7 @@
     "node-fetch": "^2.6.1",
     "numeral": "^2.0.6",
     "semver": "^7.3.4",
-    "turtlecoin-crypto": "^6.0.2"
+    "turtlecoin-crypto": "^6.0.4"
   },
   "devDependencies": {
     "@types/mocha": "^8.2.1",
